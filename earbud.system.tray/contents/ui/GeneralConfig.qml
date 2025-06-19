@@ -10,6 +10,10 @@ Item {
     property alias cfg_earbudColor: colorDialog.color
     property alias cfg_iconSize: iconSizeSpinBox.value
     property alias cfg_opacity: opacitySpinBox.value
+    property alias cfg_updateInterval: updateIntervalSpinBox.value
+    property alias cfg_bluetoothCommand: bluetoothCommandField.text
+    property alias cfg_showBatteryLevel: showBatteryLevelCheck.checked
+    property alias cfg_showDeviceName: showDeviceNameCheck.checked
 
     ColorDialog {
         id: colorDialog
@@ -94,6 +98,72 @@ Item {
                 from: 10
                 to: 100
                 stepSize: 10
+            }
+
+            // Separator
+            Rectangle {
+                Layout.columnSpan: 2
+                Layout.fillWidth: true
+                Layout.topMargin: 10
+                Layout.bottomMargin: 10
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.2)
+            }
+
+            Label {
+                Layout.columnSpan: 2
+                text: i18n("Bluetooth Settings")
+                font.bold: true
+                Layout.alignment: Qt.AlignHCenter
+            }
+
+            Label {
+                Layout.minimumWidth: configRoot.width/2
+                text: i18n("Update interval (minutes):")
+                horizontalAlignment: Text.AlignRight
+            }
+
+            SpinBox {
+                id: updateIntervalSpinBox
+                from: 1
+                to: 60
+                stepSize: 1
+            }
+
+            Label {
+                Layout.minimumWidth: configRoot.width/2
+                text: i18n("Bluetooth command:")
+                horizontalAlignment: Text.AlignRight
+            }
+
+            TextField {
+                id: bluetoothCommandField
+                Layout.minimumWidth: 200
+                Layout.fillWidth: true
+                placeholderText: "bluetoothctl info"
+                ToolTip.visible: hovered
+                ToolTip.text: i18n("Command to get information about connected Bluetooth devices. The default command 'bluetoothctl info' shows details about the currently connected device, including battery level. If you have multiple devices, you can specify a device ID like 'bluetoothctl info XX:XX:XX:XX:XX:XX'.")
+                ToolTip.delay: 500
+            }
+
+            Label {
+                Layout.minimumWidth: configRoot.width/2
+                text: i18n("Show battery level:")
+                horizontalAlignment: Text.AlignRight
+            }
+
+            CheckBox {
+                id: showBatteryLevelCheck
+            }
+
+            Label {
+                Layout.minimumWidth: configRoot.width/2
+                text: i18n("Show device name:")
+                horizontalAlignment: Text.AlignRight
+            }
+
+            CheckBox {
+                id: showDeviceNameCheck
             }
         }
     }
