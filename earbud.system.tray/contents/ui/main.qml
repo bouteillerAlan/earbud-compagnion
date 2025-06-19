@@ -16,6 +16,7 @@ PlasmoidItem {
     property int opacityValue: Plasmoid.configuration.opacity
     property int updateInterval: Plasmoid.configuration.updateInterval
     property bool isUpdating: false
+    property var bluetoothServiceRef: null // Reference to the bluetoothService for binding
 
     toolTipMainText: i18n("Earbud")
 
@@ -81,15 +82,48 @@ PlasmoidItem {
         }
     }
 
-    // Bluetooth service
-    Js.BluetoothService {
-        id: bluetoothService
-        cmd: cmd
+    // Create a property to hold the BluetoothService instance
+    // This will be accessible to all components that have a reference to root
+    property var bluetoothService: null
 
-        Component.onCompleted: {
-            console.log("BluetoothService component created")
+    // Initialize the BluetoothService as early as possible
+    Component.onCompleted: {
+        console.log("Root component created")
+
+        // Create the BluetoothService instance
+        bluetoothService = bluetoothServiceComponent.createObject(root, { "cmd": cmd })
+
+        // Set the bluetoothServiceRef property for backward compatibility
+        root.bluetoothServiceRef = bluetoothService
+
+        console.log("bluetoothService is " + (bluetoothService ? "available" : "not available"))
+        console.log("bluetoothServiceRef is " + (root.bluetoothServiceRef ? "available" : "not available"))
+
+        if (bluetoothService) {
+            console.log("bluetoothService is available in root.onCompleted")
             console.log("cmd is " + (cmd ? "available" : "not available"))
+
+            // Ensure cmd is properly set
+            if (!cmd) {
+                console.error("Error: cmd is not available in root.onCompleted")
+            } else {
+                console.log("cmd type in root.onCompleted: " + typeof cmd)
+                try {
+                    console.log("cmd properties in root.onCompleted: " + JSON.stringify(Object.keys(cmd)))
+                    console.log("cmd.exec in root.onCompleted: " + (typeof cmd.exec === 'function' ? "is a function" : "is not a function"))
+                } catch (e) {
+                    console.error("Error inspecting cmd in root.onCompleted: " + e)
+                }
+            }
+        } else {
+            console.error("Error: bluetoothService is not available in root.onCompleted")
         }
+    }
+
+    // Component for creating BluetoothService instances
+    Component {
+        id: bluetoothServiceComponent
+        Js.BluetoothService {}
     }
 
     // Timer to periodically check Bluetooth status
@@ -103,25 +137,29 @@ PlasmoidItem {
             console.log("Timer triggered")
             console.log("root.isUpdating: " + root.isUpdating)
             console.log("bluetoothService is " + (bluetoothService ? "available" : "not available"))
+            console.log("root.bluetoothServiceRef is " + (root.bluetoothServiceRef ? "available" : "not available"))
 
-            if (bluetoothService) {
-                console.log("bluetoothService type: " + typeof bluetoothService)
+            // Try to get a valid service reference
+            var service = bluetoothService || root.bluetoothServiceRef
+
+            if (service) {
+                console.log("Service type in Timer.onTriggered: " + typeof service)
                 try {
-                    console.log("bluetoothService properties: " + JSON.stringify(Object.keys(bluetoothService)))
-                    console.log("bluetoothService.cmd: " + (bluetoothService.cmd ? "available" : "not available"))
-                    console.log("bluetoothService.checkBluetoothStatus: " + (typeof bluetoothService.checkBluetoothStatus === 'function' ? "is a function" : "is not a function"))
+                    console.log("Service properties in Timer.onTriggered: " + JSON.stringify(Object.keys(service)))
+                    console.log("Service.cmd: " + (service.cmd ? "available" : "not available"))
+                    console.log("Service.checkBluetoothStatus: " + (typeof service.checkBluetoothStatus === 'function' ? "is a function" : "is not a function"))
                 } catch (e) {
-                    console.error("Error inspecting bluetoothService: " + e)
+                    console.error("Error inspecting service in Timer.onTriggered: " + e)
                 }
-            }
 
-            if (!root.isUpdating && bluetoothService) {
-                console.log("Calling checkBluetoothStatus from Timer.onTriggered")
-                bluetoothService.checkBluetoothStatus()
-            } else if (!bluetoothService) {
-                console.error("Error: bluetoothService is null in Timer.onTriggered")
+                if (!root.isUpdating) {
+                    console.log("Calling checkBluetoothStatus from Timer.onTriggered")
+                    service.checkBluetoothStatus()
+                } else {
+                    console.log("Not calling checkBluetoothStatus: isUpdating=" + root.isUpdating)
+                }
             } else {
-                console.log("Not calling checkBluetoothStatus: isUpdating=" + root.isUpdating)
+                console.error("Error: No valid service reference available in Timer.onTriggered")
             }
         }
     }
@@ -153,41 +191,20 @@ PlasmoidItem {
         iconSize: root.iconSize
         opacityValue: root.opacityValue
 
-        // Log bluetoothService details before binding
-        Component.onCompleted: {
-            console.log("fullRepresentation property in main.qml created")
-            console.log("bluetoothService before binding is " + (bluetoothService ? "available" : "not available"))
-            if (bluetoothService) {
-                console.log("bluetoothService type before binding: " + typeof bluetoothService)
-            }
-        }
+        // Pass the root object to FullRepresentation
+        // This gives it access to root.bluetoothService
+        rootItem: root
 
-        // Bind bluetoothService property
-        bluetoothService: {
-            console.log("Binding bluetoothService property in fullRepresentation")
-            console.log("bluetoothService during binding is " + (bluetoothService ? "available" : "not available"))
-            return bluetoothService
-        }
-
-        // Merge the two Component.onCompleted handlers
         Component.onCompleted: {
             console.log("FullRepresentation component in main.qml created")
-            console.log("bluetoothService after binding is " + (bluetoothService ? "available" : "not available"))
-            if (bluetoothService) {
-                console.log("bluetoothService type after binding: " + typeof bluetoothService)
-                try {
-                    console.log("bluetoothService properties after binding: " + JSON.stringify(Object.keys(bluetoothService)))
-                } catch (e) {
-                    console.error("Error inspecting bluetoothService after binding: " + e)
-                }
-            }
 
             // Trigger a Bluetooth status check when the FullRepresentation is first created
-            if (!root.isUpdating && bluetoothService) {
+            if (!root.isUpdating && root.bluetoothService) {
                 console.log("Triggering Bluetooth status check from FullRepresentation.onCompleted")
-                bluetoothService.checkBluetoothStatus()
+                root.bluetoothService.checkBluetoothStatus()
             } else {
-                console.log("Not triggering Bluetooth status check: isUpdating=" + root.isUpdating + ", bluetoothService=" + (bluetoothService ? "available" : "not available"))
+                console.log("Not triggering Bluetooth status check: isUpdating=" + root.isUpdating +
+                    ", bluetoothService=" + (root.bluetoothService ? "available" : "not available"))
             }
         }
     }

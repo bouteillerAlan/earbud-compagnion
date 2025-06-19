@@ -18,6 +18,22 @@ Item {
 
     signal dataUpdated()
 
+    Component.onCompleted: {
+        console.log("BluetoothService component in BluetoothService.qml created")
+        console.log("cmd is " + (cmd ? "available" : "not available"))
+        console.log("bluetoothCommand is: " + bluetoothCommand)
+
+        if (cmd) {
+            console.log("cmd type: " + typeof cmd)
+            try {
+                console.log("cmd properties: " + JSON.stringify(Object.keys(cmd)))
+                console.log("cmd.exec: " + (typeof cmd.exec === 'function' ? "is a function" : "is not a function"))
+            } catch (e) {
+                console.error("Error inspecting cmd: " + e)
+            }
+        }
+    }
+
     // Function to execute the bluetoothctl command and parse the output
     function checkBluetoothStatus() {
         console.log("Checking Bluetooth status")
@@ -25,6 +41,8 @@ Item {
         // Check if cmd is available
         if (!cmd) {
             console.error("Error: cmd object is not available")
+            // Emit the dataUpdated signal to update the UI even if we can't execute the command
+            dataUpdated()
             return
         }
 
@@ -35,14 +53,20 @@ Item {
         batteryLevel = -1
         isConnected = false
 
-        // Use the configured command or fall back to direct info command
-        if (bluetoothCommand && bluetoothCommand !== '') {
-            console.log("Executing configured Bluetooth command: " + bluetoothCommand)
-            cmd.exec(bluetoothCommand)
-        } else {
-            // Default to direct info command if no command is configured
-            console.log("No command configured, using default 'bluetoothctl info'")
-            cmd.exec("bluetoothctl info")
+        try {
+            // Use the configured command or fall back to direct info command
+            if (bluetoothCommand && bluetoothCommand !== '') {
+                console.log("Executing configured Bluetooth command: " + bluetoothCommand)
+                cmd.exec(bluetoothCommand)
+            } else {
+                // Default to direct info command if no command is configured
+                console.log("No command configured, using default 'bluetoothctl info'")
+                cmd.exec("bluetoothctl info")
+            }
+        } catch (e) {
+            console.error("Error executing Bluetooth command: " + e)
+            // Emit the dataUpdated signal to update the UI even if the command fails
+            dataUpdated()
         }
     }
 
@@ -55,6 +79,14 @@ Item {
             console.error("Error: cmd object is not available in processDeviceList")
             dataUpdated() // Still emit the signal to update the UI
             return
+        }
+
+        console.log("cmd is available in processDeviceList, type: " + typeof cmd)
+        try {
+            console.log("cmd properties in processDeviceList: " + JSON.stringify(Object.keys(cmd)))
+            console.log("cmd.exec in processDeviceList: " + (typeof cmd.exec === 'function' ? "is a function" : "is not a function"))
+        } catch (e) {
+            console.error("Error inspecting cmd in processDeviceList: " + e)
         }
 
         // Parse the output to extract device IDs
@@ -102,54 +134,66 @@ Item {
 
     // Parse the output of the bluetoothctl info command
     function parseBluetoothOutput(output) {
-        console.log("Parsing Bluetooth output: " + output)
+        console.log("Parsing Bluetooth output")
 
-        // Check if this is a device list output
-        if (output.indexOf("Device") === 0 && output.indexOf("devices") !== -1) {
-            processDeviceList(output)
-            return
-        }
+        try {
+            // Check if output is empty or undefined
+            if (!output || output.trim() === "") {
+                console.log("Empty or undefined output, nothing to parse")
+                dataUpdated()
+                return
+            }
 
-        // If this is a direct "bluetoothctl info" output without a device ID,
-        // it should still contain device information for the currently connected device
+            // Check if this is a device list output
+            if (output.indexOf("Device") === 0 && output.indexOf("devices") !== -1) {
+                processDeviceList(output)
+                return
+            }
 
-        // Variables to store device information
-        var device = {
-            id: "",
-            name: "",
-            alias: "",
-            batteryLevel: -1,
-            isConnected: false,
-            isAudioDevice: false,
-            icon: ""
-        }
+            // If this is a direct "bluetoothctl info" output without a device ID,
+            // it should still contain device information for the currently connected device
 
-        // Parse the output to extract device information
-        var lines = output.split('\n')
-        console.log("Number of lines in output: " + lines.length)
+            // Variables to store device information
+            var device = {
+                id: "",
+                name: "",
+                alias: "",
+                batteryLevel: -1,
+                isConnected: false,
+                isAudioDevice: false,
+                icon: ""
+            }
 
-        // First line should contain the device ID
-        if (lines.length > 0) {
-            // Look for the device ID in the first line
-            var macAddressMatch = lines[0].match(/Device\s+([0-9A-F:]{17})/i)
-            if (macAddressMatch && macAddressMatch[1]) {
-                device.id = macAddressMatch[1]
-                console.log("Processing device ID: " + device.id)
-            } else {
-                // If not found in the first line, search through all lines
-                for (var j = 0; j < lines.length; j++) {
-                    var line = lines[j].trim()
-                    if (line.indexOf("Device") === 0) {
-                        macAddressMatch = line.match(/Device\s+([0-9A-F:]{17})/i)
-                        if (macAddressMatch && macAddressMatch[1]) {
-                            device.id = macAddressMatch[1]
-                            console.log("Found device ID in line " + j + ": " + device.id)
-                            break
+            // Parse the output to extract device information
+            var lines = output.split('\n')
+            console.log("Number of lines in output: " + lines.length)
+
+            // First line should contain the device ID
+            if (lines.length > 0) {
+                try {
+                    // Look for the device ID in the first line
+                    var macAddressMatch = lines[0].match(/Device\s+([0-9A-F:]{17})/i)
+                    if (macAddressMatch && macAddressMatch[1]) {
+                        device.id = macAddressMatch[1]
+                        console.log("Processing device ID: " + device.id)
+                    } else {
+                        // If not found in the first line, search through all lines
+                        for (var j = 0; j < lines.length; j++) {
+                            var line = lines[j].trim()
+                            if (line.indexOf("Device") === 0) {
+                                macAddressMatch = line.match(/Device\s+([0-9A-F:]{17})/i)
+                                if (macAddressMatch && macAddressMatch[1]) {
+                                    device.id = macAddressMatch[1]
+                                    console.log("Found device ID in line " + j + ": " + device.id)
+                                    break
+                                }
+                            }
                         }
                     }
+                } catch (e) {
+                    console.error("Error parsing device ID: " + e)
                 }
             }
-        }
 
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i].trim()
@@ -164,7 +208,7 @@ Item {
                 console.log("Found device alias: " + device.alias)
             }
 
-            // Check if it's an audio device
+            // Check if it's an audio device based on the icon
             if (line.indexOf("Icon:") !== -1) {
                 device.icon = line.substring(line.indexOf("Icon:") + 5).trim()
                 console.log("Found device icon: " + device.icon)
@@ -174,9 +218,23 @@ Item {
                 if (device.icon === "audio-headset" || device.icon === "audio-headphones" ||
                     device.icon === "audio-card" || device.icon.indexOf("audio") !== -1 ||
                     device.icon === "phone" || device.icon.indexOf("headset") !== -1 ||
-                    device.icon.indexOf("headphone") !== -1) {
+                    device.icon.indexOf("headphone") !== -1 || device.icon.indexOf("speaker") !== -1) {
                     device.isAudioDevice = true
                     console.log("Device is an audio device based on icon: " + device.icon)
+                }
+            }
+
+            // Check if it's an audio device based on the name
+            if (!device.isAudioDevice && device.name) {
+                var nameLower = device.name.toLowerCase()
+                if (nameLower.indexOf("earbud") !== -1 || nameLower.indexOf("headphone") !== -1 ||
+                    nameLower.indexOf("headset") !== -1 || nameLower.indexOf("speaker") !== -1 ||
+                    nameLower.indexOf("audio") !== -1 || nameLower.indexOf("sound") !== -1 ||
+                    nameLower.indexOf("airpod") !== -1 || nameLower.indexOf("bose") !== -1 ||
+                    nameLower.indexOf("sony") !== -1 || nameLower.indexOf("jabra") !== -1 ||
+                    nameLower.indexOf("jbl") !== -1 || nameLower.indexOf("beats") !== -1) {
+                    device.isAudioDevice = true
+                    console.log("Device is an audio device based on name: " + device.name)
                 }
             }
 
@@ -389,5 +447,10 @@ Item {
 
         // Emit signal that data has been updated
         dataUpdated()
+        } catch (e) {
+            console.error("Error parsing Bluetooth output: " + e)
+            // Emit the dataUpdated signal to update the UI even if parsing fails
+            dataUpdated()
+        }
     }
 }
