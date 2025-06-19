@@ -129,7 +129,7 @@ PlasmoidItem {
     // Timer to periodically check Bluetooth status
     Timer {
         id: updateTimer
-        interval: updateInterval * 60000 // Convert minutes to milliseconds
+        interval: updateInterval * 1000 // Convert seconds to milliseconds
         running: true
         repeat: true
         triggeredOnStart: true
@@ -181,6 +181,7 @@ PlasmoidItem {
             customColor: root.customColor
             earbudColor: root.earbudColor
             opacityValue: root.opacityValue
+            source: "audio-headset" // Fallback to system icon if needed
         }
     }
 

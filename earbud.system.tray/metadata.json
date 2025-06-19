@@ -12,13 +12,15 @@
         "Description": "A customizable earbud icon for the system tray and taskbar",
         "Category": "Utilities",
         "Icon": "audio-headset",
-        "EnabledByDefault": true,
+        "EnabledByDefault": false,
         "License": "GPL-3.0+",
         "ServiceTypes": [
             "Plasma/Applet"
         ],
         "Version": "1.0"
     },
+    "X-Plasma-NotificationArea": true,
+    "X-Plasma-NotificationAreaCategory": "Hardware",
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-MainScript": "ui/main.qml"
 }

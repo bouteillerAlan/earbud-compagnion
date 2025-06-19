@@ -119,14 +119,14 @@ Item {
 
             Label {
                 Layout.minimumWidth: configRoot.width/2
-                text: i18n("Update interval (minutes):")
+                text: i18n("Update interval (seconds):")
                 horizontalAlignment: Text.AlignRight
             }
 
             SpinBox {
                 id: updateIntervalSpinBox
                 from: 1
-                to: 60
+                to: 300
                 stepSize: 1
             }
 

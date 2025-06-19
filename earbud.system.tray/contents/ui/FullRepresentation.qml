@@ -135,6 +135,7 @@ Item {
             customColor: fullRep.customColor
             earbudColor: fullRep.earbudColor
             opacityValue: fullRep.opacityValue
+            source: "audio-headset" // Fallback to system icon if needed
         }
 
         // No device connected message

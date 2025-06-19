@@ -22,7 +22,7 @@
 
   <!-- Bluetooth settings -->
   <entry name="updateInterval" type="int">
-    <default>1</default>
+    <default>3</default>
   </entry>
   <entry name="bluetoothCommand" type="string">
     <default>bluetoothctl info</default>
