@@ -221,7 +221,6 @@ Item {
                             font.bold: true
                             Layout.fillWidth: true
                             elide: Text.ElideRight
-                            visible: showDeviceName
                         }
 
                         Label {
@@ -256,7 +255,6 @@ Item {
                     RowLayout {
                         Layout.fillWidth: true
                         Layout.margins: 5
-                        visible: showBatteryLevel
 
                         Label {
                             text: i18n("Battery:")
