@@ -24,12 +24,6 @@ PlasmoidItem {
     Layout.preferredWidth: iconSize
     Layout.preferredHeight: iconSize
 
-    // Bluetooth service
-    Js.BluetoothService {
-        id: bluetoothService
-        cmd: cmd
-    }
-
     // Command execution engine
     Plasma5Support.DataSource {
         id: cmd
@@ -87,6 +81,17 @@ PlasmoidItem {
         }
     }
 
+    // Bluetooth service
+    Js.BluetoothService {
+        id: bluetoothService
+        cmd: cmd
+
+        Component.onCompleted: {
+            console.log("BluetoothService component created")
+            console.log("cmd is " + (cmd ? "available" : "not available"))
+        }
+    }
+
     // Timer to periodically check Bluetooth status
     Timer {
         id: updateTimer
@@ -95,10 +100,28 @@ PlasmoidItem {
         repeat: true
         triggeredOnStart: true
         onTriggered: {
+            console.log("Timer triggered")
+            console.log("root.isUpdating: " + root.isUpdating)
+            console.log("bluetoothService is " + (bluetoothService ? "available" : "not available"))
+
+            if (bluetoothService) {
+                console.log("bluetoothService type: " + typeof bluetoothService)
+                try {
+                    console.log("bluetoothService properties: " + JSON.stringify(Object.keys(bluetoothService)))
+                    console.log("bluetoothService.cmd: " + (bluetoothService.cmd ? "available" : "not available"))
+                    console.log("bluetoothService.checkBluetoothStatus: " + (typeof bluetoothService.checkBluetoothStatus === 'function' ? "is a function" : "is not a function"))
+                } catch (e) {
+                    console.error("Error inspecting bluetoothService: " + e)
+                }
+            }
+
             if (!root.isUpdating && bluetoothService) {
+                console.log("Calling checkBluetoothStatus from Timer.onTriggered")
                 bluetoothService.checkBluetoothStatus()
             } else if (!bluetoothService) {
                 console.error("Error: bluetoothService is null in Timer.onTriggered")
+            } else {
+                console.log("Not calling checkBluetoothStatus: isUpdating=" + root.isUpdating)
             }
         }
     }
@@ -124,16 +147,47 @@ PlasmoidItem {
     }
 
     fullRepresentation: FullRepresentation {
+        id: fullRep
         customColor: root.customColor
         earbudColor: root.earbudColor
         iconSize: root.iconSize
         opacityValue: root.opacityValue
-        bluetoothService: bluetoothService
 
+        // Log bluetoothService details before binding
         Component.onCompleted: {
+            console.log("fullRepresentation property in main.qml created")
+            console.log("bluetoothService before binding is " + (bluetoothService ? "available" : "not available"))
+            if (bluetoothService) {
+                console.log("bluetoothService type before binding: " + typeof bluetoothService)
+            }
+        }
+
+        // Bind bluetoothService property
+        bluetoothService: {
+            console.log("Binding bluetoothService property in fullRepresentation")
+            console.log("bluetoothService during binding is " + (bluetoothService ? "available" : "not available"))
+            return bluetoothService
+        }
+
+        // Merge the two Component.onCompleted handlers
+        Component.onCompleted: {
+            console.log("FullRepresentation component in main.qml created")
+            console.log("bluetoothService after binding is " + (bluetoothService ? "available" : "not available"))
+            if (bluetoothService) {
+                console.log("bluetoothService type after binding: " + typeof bluetoothService)
+                try {
+                    console.log("bluetoothService properties after binding: " + JSON.stringify(Object.keys(bluetoothService)))
+                } catch (e) {
+                    console.error("Error inspecting bluetoothService after binding: " + e)
+                }
+            }
+
             // Trigger a Bluetooth status check when the FullRepresentation is first created
             if (!root.isUpdating && bluetoothService) {
+                console.log("Triggering Bluetooth status check from FullRepresentation.onCompleted")
                 bluetoothService.checkBluetoothStatus()
+            } else {
+                console.log("Not triggering Bluetooth status check: isUpdating=" + root.isUpdating + ", bluetoothService=" + (bluetoothService ? "available" : "not available"))
             }
         }
     }

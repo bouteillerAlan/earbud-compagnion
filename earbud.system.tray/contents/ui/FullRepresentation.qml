@@ -24,10 +24,31 @@ Item {
     // Reference to the Bluetooth service from main.qml
     property var bluetoothService: null
 
+    Component.onCompleted: {
+        console.log("FullRepresentation component in FullRepresentation.qml created")
+        console.log("bluetoothService is " + (bluetoothService ? "available" : "not available"))
+        if (bluetoothService) {
+            console.log("bluetoothService type: " + typeof bluetoothService)
+            try {
+                console.log("bluetoothService properties: " + JSON.stringify(Object.keys(bluetoothService)))
+            } catch (e) {
+                console.error("Error inspecting bluetoothService: " + e)
+            }
+        }
+    }
+
     // Update UI when bluetoothService property changes
     onBluetoothServiceChanged: {
         console.log("bluetoothService changed: " + (bluetoothService ? "not null" : "null"))
         if (bluetoothService) {
+            console.log("bluetoothService type: " + typeof bluetoothService)
+            try {
+                console.log("bluetoothService properties: " + JSON.stringify(Object.keys(bluetoothService)))
+                console.log("bluetoothService.cmd: " + (bluetoothService.cmd ? "available" : "not available"))
+                console.log("bluetoothService.checkBluetoothStatus: " + (typeof bluetoothService.checkBluetoothStatus === 'function' ? "is a function" : "is not a function"))
+            } catch (e) {
+                console.error("Error inspecting bluetoothService: " + e)
+            }
             updateUI()
         } else {
             console.error("Error: bluetoothService is null in onBluetoothServiceChanged")
@@ -38,6 +59,8 @@ Item {
 
     // Function to update the UI with current data
     function updateUI() {
+        console.log("updateUI called")
+
         if (!bluetoothService) {
             console.error("Error: bluetoothService is null in updateUI")
             noDeviceLabel.visible = true
@@ -45,19 +68,44 @@ Item {
             return
         }
 
-        // Update the device list
-        deviceListView.model = bluetoothService.devices
+        console.log("bluetoothService is available in updateUI")
+        console.log("bluetoothService.devices: " + (bluetoothService.devices ? "available" : "not available"))
 
-        // Show/hide the no devices message
-        noDeviceLabel.visible = bluetoothService.devices.length === 0
-        deviceListView.visible = bluetoothService.devices.length > 0
+        if (bluetoothService.devices) {
+            console.log("bluetoothService.devices.length: " + bluetoothService.devices.length)
+            console.log("bluetoothService.devices: " + JSON.stringify(bluetoothService.devices))
+        }
+
+        try {
+            // Update the device list
+            deviceListView.model = bluetoothService.devices
+
+            // Show/hide the no devices message
+            noDeviceLabel.visible = bluetoothService.devices.length === 0
+            deviceListView.visible = bluetoothService.devices.length > 0
+
+            console.log("UI updated successfully")
+        } catch (e) {
+            console.error("Error updating UI: " + e)
+            noDeviceLabel.visible = true
+            deviceListView.visible = false
+        }
     }
 
     // Connect to the dataUpdated signal from the BluetoothService
     Connections {
+        id: bluetoothServiceConnections
         target: bluetoothService
         enabled: bluetoothService !== null
+
+        Component.onCompleted: {
+            console.log("BluetoothService Connections component created")
+            console.log("target is " + (target ? "available" : "not available"))
+            console.log("enabled is " + enabled)
+        }
+
         function onDataUpdated() {
+            console.log("dataUpdated signal received from bluetoothService")
             updateUI()
         }
     }
@@ -248,13 +296,26 @@ Item {
             enabled: !refreshing
             property bool refreshing: false
 
+            Component.onCompleted: {
+                console.log("Refresh button created")
+                console.log("bluetoothService in refresh button is " + (typeof bluetoothService !== 'undefined' && bluetoothService !== null ? "available" : "not available"))
+            }
+
             onClicked: {
+                console.log("Refresh button clicked")
+                console.log("bluetoothService is " + (typeof bluetoothService !== 'undefined' && bluetoothService !== null ? "available" : "not available"))
+                if (typeof bluetoothService !== 'undefined' && bluetoothService !== null) {
+                    console.log("bluetoothService type: " + typeof bluetoothService)
+                    console.log("bluetoothService properties: " + JSON.stringify(Object.keys(bluetoothService)))
+                }
+
                 refreshing = true
                 refreshTimer.start()
-                if (bluetoothService) {
+                if (typeof bluetoothService !== 'undefined' && bluetoothService !== null) {
+                    console.log("Calling checkBluetoothStatus on bluetoothService")
                     bluetoothService.checkBluetoothStatus()
                 } else {
-                    console.error("Error: bluetoothService is null")
+                    console.error("Error: bluetoothService is null or undefined")
                     refreshing = false
                     refreshTimer.stop()
                 }
