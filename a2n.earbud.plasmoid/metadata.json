@@ -6,21 +6,19 @@
                 "Name": "Bouteiller <a2n> Alan"
             }
         ],
-        "Website": "https://github.com/bouteillerAlan/archupdate",
+        "Website": "https://github.com/bouteillerAlan/earbud",
         "Name": "Earbud System Tray",
-        "Id": "earbud.system.tray",
-        "Description": "A customizable earbud icon for the system tray and taskbar",
+        "Id": "a2n.earbud.plasmoid",
+        "Description": "Simple earbud icon for the system tray and taskbar",
         "Category": "Utilities",
         "Icon": "audio-headset",
         "EnabledByDefault": false,
         "License": "GPL-3.0+",
-        "ServiceTypes": [
-            "Plasma/Applet"
-        ],
-        "Version": "1.0"
+        "Version": "1.0",
+        "Depends": ["bluetoothctl"]
     },
     "X-Plasma-NotificationArea": true,
     "X-Plasma-NotificationAreaCategory": "Hardware",
     "X-Plasma-API-Minimum-Version": "6.0",
-    "X-Plasma-MainScript": "ui/main.qml"
+    "KPackageStructure": "Plasma/Applet"
 }
