@@ -1,10 +1,16 @@
 import QtQuick
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.11
+import QtQuick.Layouts
+import QtQuick.Controls as Controls
+import kde.org.kirigami as Kirigami
 import Qt.labs.platform
+import "../service/Log.js" as Log
 
-Item {
-    id: configRoot
+Kirigami.ScrollablePage {
+    id: generalConfig
+
+    Component.onCompleted: {
+        Log.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    }
 
     property alias cfg_customColor: checkCustomColor.checked
     property alias cfg_earbudColor: colorDialog.color
@@ -28,7 +34,7 @@ Item {
             columns: 2
 
             Label {
-                Layout.minimumWidth: configRoot.width/2
+                Layout.minimumWidth: generalConfig.width/2
                 text: i18n("Use custom color:")
                 horizontalAlignment: Text.AlignRight
             }
@@ -38,7 +44,7 @@ Item {
             }
 
             Label {
-                Layout.minimumWidth: configRoot.width/2
+                Layout.minimumWidth: generalConfig.width/2
                 text: i18n("Earbud color:")
                 horizontalAlignment: Text.AlignRight
                 enabled: checkCustomColor.checked
@@ -75,7 +81,7 @@ Item {
             }
 
             Label {
-                Layout.minimumWidth: configRoot.width/2
+                Layout.minimumWidth: generalConfig.width/2
                 text: i18n("Icon size:")
                 horizontalAlignment: Text.AlignRight
             }
@@ -88,7 +94,7 @@ Item {
             }
 
             Label {
-                Layout.minimumWidth: configRoot.width/2
+                Layout.minimumWidth: generalConfig.width/2
                 text: i18n("Opacity:")
                 horizontalAlignment: Text.AlignRight
             }
@@ -118,7 +124,7 @@ Item {
             }
 
             Label {
-                Layout.minimumWidth: configRoot.width/2
+                Layout.minimumWidth: generalConfig.width/2
                 text: i18n("Update interval (seconds):")
                 horizontalAlignment: Text.AlignRight
             }
@@ -131,7 +137,7 @@ Item {
             }
 
             Label {
-                Layout.minimumWidth: configRoot.width/2
+                Layout.minimumWidth: generalConfig.width/2
                 text: i18n("Bluetooth command:")
                 horizontalAlignment: Text.AlignRight
             }
@@ -147,7 +153,7 @@ Item {
             }
 
             Label {
-                Layout.minimumWidth: configRoot.width/2
+                Layout.minimumWidth: generalConfig.width/2
                 text: i18n("Show battery level:")
                 horizontalAlignment: Text.AlignRight
             }
@@ -157,7 +163,7 @@ Item {
             }
 
             Label {
-                Layout.minimumWidth: configRoot.width/2
+                Layout.minimumWidth: generalConfig.width/2
                 text: i18n("Show device name:")
                 horizontalAlignment: Text.AlignRight
             }

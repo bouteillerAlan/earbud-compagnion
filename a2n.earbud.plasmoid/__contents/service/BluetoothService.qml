@@ -1,5 +1,7 @@
 import QtQuick
 import org.kde.plasma.plasmoid
+import "../_toolbox" as Toolbox
+import "../service/Log.js" as Log
 
 Item {
     id: bluetoothService
@@ -10,7 +12,7 @@ Item {
     property bool isConnected: false
     property string bluetoothCommand: Plasmoid.configuration.bluetoothCommand
 
-    // Reference to the command execution engine from main.qml
+    // Reference to the command execution utility
     property var cmd: null
 
     // List of all connected audio devices
@@ -19,28 +21,48 @@ Item {
     signal dataUpdated()
 
     Component.onCompleted: {
-        console.log("BluetoothService component in BluetoothService.qml created")
-        console.log("cmd is " + (cmd ? "available" : "not available"))
-        console.log("bluetoothCommand is: " + bluetoothCommand)
+        Log.log("BluetoothService component in BluetoothService.qml created")
+        Log.log("cmd is " + (cmd ? "available" : "not available"))
+        Log.log("bluetoothCommand is: " + bluetoothCommand)
 
         if (cmd) {
-            console.log("cmd type: " + typeof cmd)
+            Log.log("cmd type: " + typeof cmd)
             try {
-                console.log("cmd properties: " + JSON.stringify(Object.keys(cmd)))
-                console.log("cmd.exec: " + (typeof cmd.exec === 'function' ? "is a function" : "is not a function"))
+                Log.log("cmd properties: " + JSON.stringify(Object.keys(cmd)))
+                Log.log("cmd.exec: " + (typeof cmd.exec === 'function' ? "is a function" : "is not a function"))
             } catch (e) {
-                console.error("Error inspecting cmd: " + e)
+                Log.log("Error inspecting cmd: " + e)
+            }
+        }
+    }
+
+    // Connect to the commandCompleted signal from the Cmd utility
+    Connections {
+        target: cmd
+        enabled: target !== null
+
+        function onCommandCompleted(command, stdout, stderr, exitCode, exitStatus) {
+            Log.log("Command completed: " + command)
+
+            // Process the command output
+            // Always parse the output for any bluetoothctl command
+            if (command.indexOf("bluetoothctl") !== -1) {
+                Log.log("Processing output for Bluetooth command")
+                parseBluetoothOutput(stdout)
+            } else {
+                Log.log("Command is not a bluetoothctl command")
+                Log.log("Command: " + command)
             }
         }
     }
 
     // Function to execute the bluetoothctl command and parse the output
     function checkBluetoothStatus() {
-        console.log("Checking Bluetooth status")
+        Log.log("Checking Bluetooth status")
 
         // Check if cmd is available
         if (!cmd) {
-            console.error("Error: cmd object is not available")
+            Log.log("Error: cmd object is not available")
             // Emit the dataUpdated signal to update the UI even if we can't execute the command
             dataUpdated()
             return
@@ -56,15 +78,15 @@ Item {
         try {
             // Use the configured command or fall back to direct info command
             if (bluetoothCommand && bluetoothCommand !== '') {
-                console.log("Executing configured Bluetooth command: " + bluetoothCommand)
+                Log.log("Executing configured Bluetooth command: " + bluetoothCommand)
                 cmd.exec(bluetoothCommand)
             } else {
                 // Default to direct info command if no command is configured
-                console.log("No command configured, using default 'bluetoothctl info'")
+                Log.log("No command configured, using default 'bluetoothctl info'")
                 cmd.exec("bluetoothctl info")
             }
         } catch (e) {
-            console.error("Error executing Bluetooth command: " + e)
+            Log.log("Error executing Bluetooth command: " + e)
             // Emit the dataUpdated signal to update the UI even if the command fails
             dataUpdated()
         }
@@ -72,21 +94,21 @@ Item {
 
     // Process the list of devices and get info for each one
     function processDeviceList(output) {
-        console.log("Processing device list: " + output)
+        Log.log("Processing device list: " + output)
 
         // Check if cmd is available
         if (!cmd) {
-            console.error("Error: cmd object is not available in processDeviceList")
+            Log.log("Error: cmd object is not available in processDeviceList")
             dataUpdated() // Still emit the signal to update the UI
             return
         }
 
-        console.log("cmd is available in processDeviceList, type: " + typeof cmd)
+        Log.log("cmd is available in processDeviceList, type: " + typeof cmd)
         try {
-            console.log("cmd properties in processDeviceList: " + JSON.stringify(Object.keys(cmd)))
-            console.log("cmd.exec in processDeviceList: " + (typeof cmd.exec === 'function' ? "is a function" : "is not a function"))
+            Log.log("cmd properties in processDeviceList: " + JSON.stringify(Object.keys(cmd)))
+            Log.log("cmd.exec in processDeviceList: " + (typeof cmd.exec === 'function' ? "is a function" : "is not a function"))
         } catch (e) {
-            console.error("Error inspecting cmd in processDeviceList: " + e)
+            Log.log("Error inspecting cmd in processDeviceList: " + e)
         }
 
         // Parse the output to extract device IDs
@@ -103,7 +125,7 @@ Item {
                 var macAddressMatch = line.match(/Device\s+([0-9A-F:]{17})/i)
                 if (macAddressMatch && macAddressMatch[1]) {
                     var deviceId = macAddressMatch[1]
-                    console.log("Found device ID: " + deviceId)
+                    Log.log("Found device ID: " + deviceId)
                     pairedDevices.push(deviceId)
 
                     // Get detailed info for this device
@@ -115,7 +137,7 @@ Item {
 
         // If no devices were found, try a different approach
         if (deviceCount === 0) {
-            console.log("No devices found with 'bluetoothctl devices', trying direct info command")
+            Log.log("No devices found with 'bluetoothctl devices', trying direct info command")
 
             // Try getting info for the default controller
             cmd.exec("bluetoothctl show")
@@ -128,18 +150,18 @@ Item {
             // Make sure to emit the dataUpdated signal to update the UI
             dataUpdated()
         } else {
-            console.log("Found " + deviceCount + " devices: " + pairedDevices.join(", "))
+            Log.log("Found " + deviceCount + " devices: " + pairedDevices.join(", "))
         }
     }
 
     // Parse the output of the bluetoothctl info command
     function parseBluetoothOutput(output) {
-        console.log("Parsing Bluetooth output")
+        Log.log("Parsing Bluetooth output")
 
         try {
             // Check if output is empty or undefined
             if (!output || output.trim() === "") {
-                console.log("Empty or undefined output, nothing to parse")
+                Log.log("Empty or undefined output, nothing to parse")
                 dataUpdated()
                 return
             }
@@ -166,7 +188,7 @@ Item {
 
             // Parse the output to extract device information
             var lines = output.split('\n')
-            console.log("Number of lines in output: " + lines.length)
+            Log.log("Number of lines in output: " + lines.length)
 
             // First line should contain the device ID
             if (lines.length > 0) {
@@ -175,7 +197,7 @@ Item {
                     var macAddressMatch = lines[0].match(/Device\s+([0-9A-F:]{17})/i)
                     if (macAddressMatch && macAddressMatch[1]) {
                         device.id = macAddressMatch[1]
-                        console.log("Processing device ID: " + device.id)
+                        Log.log("Processing device ID: " + device.id)
                     } else {
                         // If not found in the first line, search through all lines
                         for (var j = 0; j < lines.length; j++) {
@@ -184,14 +206,14 @@ Item {
                                 macAddressMatch = line.match(/Device\s+([0-9A-F:]{17})/i)
                                 if (macAddressMatch && macAddressMatch[1]) {
                                     device.id = macAddressMatch[1]
-                                    console.log("Found device ID in line " + j + ": " + device.id)
+                                    Log.log("Found device ID in line " + j + ": " + device.id)
                                     break
                                 }
                             }
                         }
                     }
                 } catch (e) {
-                    console.error("Error parsing device ID: " + e)
+                    Log.log("Error parsing device ID: " + e)
                 }
             }
 
@@ -201,17 +223,17 @@ Item {
             // Extract device name
             if (line.indexOf("Name:") !== -1) {
                 device.name = line.substring(line.indexOf("Name:") + 5).trim()
-                console.log("Found device name: " + device.name)
+                Log.log("Found device name: " + device.name)
             } else if (line.indexOf("Alias:") !== -1) {
                 // Some devices might use Alias instead of Name
                 device.alias = line.substring(line.indexOf("Alias:") + 6).trim()
-                console.log("Found device alias: " + device.alias)
+                Log.log("Found device alias: " + device.alias)
             }
 
             // Check if it's an audio device based on the icon
             if (line.indexOf("Icon:") !== -1) {
                 device.icon = line.substring(line.indexOf("Icon:") + 5).trim()
-                console.log("Found device icon: " + device.icon)
+                Log.log("Found device icon: " + device.icon)
 
                 // Check if it's an audio device based on the icon
                 // Be more permissive with the icon check
@@ -220,7 +242,7 @@ Item {
                     device.icon === "phone" || device.icon.indexOf("headset") !== -1 ||
                     device.icon.indexOf("headphone") !== -1 || device.icon.indexOf("speaker") !== -1) {
                     device.isAudioDevice = true
-                    console.log("Device is an audio device based on icon: " + device.icon)
+                    Log.log("Device is an audio device based on icon: " + device.icon)
                 }
             }
 
@@ -234,7 +256,7 @@ Item {
                     nameLower.indexOf("sony") !== -1 || nameLower.indexOf("jabra") !== -1 ||
                     nameLower.indexOf("jbl") !== -1 || nameLower.indexOf("beats") !== -1) {
                     device.isAudioDevice = true
-                    console.log("Device is an audio device based on name: " + device.name)
+                    Log.log("Device is an audio device based on name: " + device.name)
                 }
             }
 
@@ -251,70 +273,70 @@ Item {
                     uuidLine.indexOf("microphone") !== -1 ||
                     uuidLine.indexOf("phone") !== -1) {
                     device.isAudioDevice = true
-                    console.log("Device has audio-related UUID: " + line.substring(line.indexOf("UUID:") + 5).trim())
+                    Log.log("Device has audio-related UUID: " + line.substring(line.indexOf("UUID:") + 5).trim())
                 }
             }
 
             // Extract battery level - try different formats
             if (line.indexOf("Battery Percentage:") !== -1) {
                 var batteryStr = line.substring(line.indexOf("Battery Percentage:") + 19).trim()
-                console.log("Raw battery string: " + batteryStr)
+                Log.log("Raw battery string: " + batteryStr)
 
                 // Check for hexadecimal format with percentage in parentheses: "0x64 (100)"
                 var percentInParentheses = batteryStr.match(/\((\d+)\)/)
                 if (percentInParentheses && percentInParentheses[1]) {
                     device.batteryLevel = parseInt(percentInParentheses[1], 10)
-                    console.log("Found battery level from parentheses: " + device.batteryLevel)
+                    Log.log("Found battery level from parentheses: " + device.batteryLevel)
                 }
                 // Check for hexadecimal format (0xXX)
                 else if (batteryStr.indexOf("0x") === 0) {
                     var hexValue = batteryStr.split(' ')[0]
                     // Convert hex to decimal
                     device.batteryLevel = parseInt(hexValue.substring(2), 16)
-                    console.log("Found battery level from hex: " + device.batteryLevel)
+                    Log.log("Found battery level from hex: " + device.batteryLevel)
                 }
                 // Check for direct percentage value
                 else {
                     var directPercent = parseInt(batteryStr, 10)
                     if (!isNaN(directPercent)) {
                         device.batteryLevel = directPercent
-                        console.log("Found battery level from direct value: " + device.batteryLevel)
+                        Log.log("Found battery level from direct value: " + device.batteryLevel)
                     }
                 }
 
                 if (isNaN(device.batteryLevel)) {
                     device.batteryLevel = -1
-                    console.log("Battery level is not a number")
+                    Log.log("Battery level is not a number")
                 }
             }
             // Check for "Battery:" format
             else if (line.indexOf("Battery:") !== -1) {
                 var batteryStr = line.substring(line.indexOf("Battery:") + 8).trim()
-                console.log("Raw battery string (alt format): " + batteryStr)
+                Log.log("Raw battery string (alt format): " + batteryStr)
 
                 // Try to extract percentage value
                 var percentMatch = batteryStr.match(/(\d+)%/)
                 if (percentMatch && percentMatch[1]) {
                     device.batteryLevel = parseInt(percentMatch[1], 10)
-                    console.log("Found battery level from percentage: " + device.batteryLevel)
+                    Log.log("Found battery level from percentage: " + device.batteryLevel)
                 }
             }
 
             // Check if connected
             if (line.indexOf("Connected:") !== -1) {
                 device.isConnected = line.substring(line.indexOf("Connected:") + 10).trim().toLowerCase() === "yes"
-                console.log("Device connected: " + device.isConnected)
+                Log.log("Device connected: " + device.isConnected)
             } else if (line.indexOf("Status:") !== -1) {
                 // Some outputs might use Status instead of Connected
                 var status = line.substring(line.indexOf("Status:") + 7).trim().toLowerCase()
                 device.isConnected = status === "connected" || status === "yes"
-                console.log("Device connected from Status: " + device.isConnected)
+                Log.log("Device connected from Status: " + device.isConnected)
             }
 
             // Check for Class that indicates audio device
             if (line.indexOf("Class:") !== -1) {
                 var classStr = line.substring(line.indexOf("Class:") + 6).trim()
-                console.log("Device class: " + classStr)
+                Log.log("Device class: " + classStr)
 
                 // Extract the major device class (bits 8-12) and minor device class (bits 2-7)
                 // Audio devices have major class 0x04 (Audio/Video)
@@ -323,12 +345,12 @@ Item {
                     var majorClass = (classValue >> 8) & 0x1F // Extract bits 8-12
                     var minorClass = (classValue >> 2) & 0x3F // Extract bits 2-7
 
-                    console.log("Major class: 0x" + majorClass.toString(16) + ", Minor class: 0x" + minorClass.toString(16))
+                    Log.log("Major class: 0x" + majorClass.toString(16) + ", Minor class: 0x" + minorClass.toString(16))
 
                     // Major class 0x04 is Audio/Video
                     if (majorClass === 0x04) {
                         device.isAudioDevice = true
-                        console.log("Device has Audio/Video major class")
+                        Log.log("Device has Audio/Video major class")
 
                         // Minor class for audio devices:
                         // 0x01 = Headset
@@ -368,7 +390,7 @@ Item {
                             case 0x12: deviceType = "Gaming/Toy"; break;
                         }
 
-                        console.log("Device is a " + deviceType)
+                        Log.log("Device is a " + deviceType)
                     }
                 }
             }
@@ -381,7 +403,7 @@ Item {
 
         // Check if the device has an ID
         if (device.id !== "") {
-            console.log("Found device: " + device.name + ", isConnected: " + device.isConnected + ", isAudioDevice: " + device.isAudioDevice)
+            Log.log("Found device: " + device.name + ", isConnected: " + device.isConnected + ", isAudioDevice: " + device.isAudioDevice)
 
             // Add all devices, but mark them as audio devices if they match our criteria
             // This ensures we don't miss any potential audio devices
@@ -396,13 +418,13 @@ Item {
                     nameLower.indexOf("sound") !== -1 ||
                     nameLower.indexOf("mic") !== -1) {
                     device.isAudioDevice = true
-                    console.log("Device identified as audio device based on name: " + device.name)
+                    Log.log("Device identified as audio device based on name: " + device.name)
                 }
             }
 
             // Only add connected devices
             if (device.isConnected) {
-                console.log("Adding connected device to list: " + device.name)
+                Log.log("Adding connected device to list: " + device.name)
 
                 // Check if this device is already in the list
                 var exists = false
@@ -428,18 +450,18 @@ Item {
                     isConnected = device.isConnected
                 }
             } else {
-                console.log("Device is not connected, skipping: " + device.name)
+                Log.log("Device is not connected, skipping: " + device.name)
             }
         } else {
-            console.log("Device has no ID, skipping")
+            Log.log("Device has no ID, skipping")
         }
 
-        console.log("Total audio devices found: " + devices.length)
+        Log.log("Total audio devices found: " + devices.length)
 
         // If no audio devices were found but we processed at least one device,
         // make sure the UI shows "No audio devices connected"
         if (devices.length === 0 && device.id !== "") {
-            console.log("No audio devices found among connected devices")
+            Log.log("No audio devices found among connected devices")
             deviceName = ""
             batteryLevel = -1
             isConnected = false
@@ -448,7 +470,7 @@ Item {
         // Emit signal that data has been updated
         dataUpdated()
         } catch (e) {
-            console.error("Error parsing Bluetooth output: " + e)
+            Log.log("Error parsing Bluetooth output: " + e)
             // Emit the dataUpdated signal to update the UI even if parsing fails
             dataUpdated()
         }

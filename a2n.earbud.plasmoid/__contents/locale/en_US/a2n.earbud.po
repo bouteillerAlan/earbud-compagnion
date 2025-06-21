@@ -1,0 +1,133 @@
+# English translations for a2n.earbud package.
+# Copyright (C) 2023 THE a2n.earbud'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the a2n.earbud package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: a2n.earbud\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-21 12:00+0000\n"
+"PO-Revision-Date: 2023-06-21 12:00+0000\n"
+"Last-Translator: a2n <a2n@example.com>\n"
+"Language-Team: English <en@example.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../ui/main.qml:21
+msgid "Earbud"
+msgstr "Earbud"
+
+#: ../ui/FullRepresentation.qml:124
+msgid "Bluetooth Audio Devices"
+msgstr "Bluetooth Audio Devices"
+
+#: ../ui/components/NoDevicesMessage.qml:14
+msgid "No audio devices connected"
+msgstr "No audio devices connected"
+
+#: ../ui/components/NoDevicesMessage.qml:15
+msgid "Make sure your Bluetooth device is:"
+msgstr "Make sure your Bluetooth device is:"
+
+#: ../ui/components/NoDevicesMessage.qml:17
+msgid "1. Turned on and in pairing mode"
+msgstr "1. Turned on and in pairing mode"
+
+#: ../ui/components/NoDevicesMessage.qml:18
+msgid "2. Paired with your computer"
+msgstr "2. Paired with your computer"
+
+#: ../ui/components/NoDevicesMessage.qml:19
+msgid "3. Connected (not just paired)"
+msgstr "3. Connected (not just paired)"
+
+#: ../ui/components/DeviceItem.qml:48
+msgid "Unknown Device"
+msgstr "Unknown Device"
+
+#: ../ui/components/DeviceItem.qml:55
+msgid "Connected"
+msgstr "Connected"
+
+#: ../ui/components/DeviceItem.qml:55
+msgid "Disconnected"
+msgstr "Disconnected"
+
+#: ../ui/components/DeviceItem.qml:67
+msgid "Type:"
+msgstr "Type:"
+
+#: ../ui/components/DeviceItem.qml:71
+msgid "Unknown"
+msgstr "Unknown"
+
+#: ../ui/components/DeviceItem.qml:77
+msgid "Audio Device"
+msgstr "Audio Device"
+
+#: ../ui/components/DeviceItem.qml:77
+msgid "Other Device"
+msgstr "Other Device"
+
+#: ../ui/components/DeviceItem.qml:89
+msgid "Battery:"
+msgstr "Battery:"
+
+#: ../ui/components/DeviceItem.qml:93
+msgid "Unknown"
+msgstr "Unknown"
+
+#: ../ui/FullRepresentation.qml:297
+msgid "Refreshing..."
+msgstr "Refreshing..."
+
+#: ../ui/FullRepresentation.qml:297
+msgid "Refresh"
+msgstr "Refresh"
+
+#: ../ui/GeneralConfig.qml:32
+msgid "Use custom color:"
+msgstr "Use custom color:"
+
+#: ../ui/GeneralConfig.qml:42
+msgid "Earbud color:"
+msgstr "Earbud color:"
+
+#: ../ui/GeneralConfig.qml:79
+msgid "Icon size:"
+msgstr "Icon size:"
+
+#: ../ui/GeneralConfig.qml:92
+msgid "Opacity:"
+msgstr "Opacity:"
+
+#: ../ui/GeneralConfig.qml:115
+msgid "Bluetooth Settings"
+msgstr "Bluetooth Settings"
+
+#: ../ui/GeneralConfig.qml:122
+msgid "Update interval (seconds):"
+msgstr "Update interval (seconds):"
+
+#: ../ui/GeneralConfig.qml:135
+msgid "Bluetooth command:"
+msgstr "Bluetooth command:"
+
+#: ../ui/GeneralConfig.qml:143
+msgid "bluetoothctl info"
+msgstr "bluetoothctl info"
+
+#: ../ui/GeneralConfig.qml:145
+msgid "Command to get information about connected Bluetooth devices. The default command 'bluetoothctl info' shows details about the currently connected device, including battery level. If you have multiple devices, you can specify a device ID like 'bluetoothctl info XX:XX:XX:XX:XX:XX'."
+msgstr "Command to get information about connected Bluetooth devices. The default command 'bluetoothctl info' shows details about the currently connected device, including battery level. If you have multiple devices, you can specify a device ID like 'bluetoothctl info XX:XX:XX:XX:XX:XX'."
+
+#: ../ui/GeneralConfig.qml:151
+msgid "Show battery level:"
+msgstr "Show battery level:"
+
+#: ../ui/GeneralConfig.qml:161
+msgid "Show device name:"
+msgstr "Show device name:"

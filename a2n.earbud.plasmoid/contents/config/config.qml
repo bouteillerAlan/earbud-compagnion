@@ -1,10 +1,10 @@
-import QtQuick 2.12
-import org.kde.plasma.configuration 2.0
+import QtQuick
+import org.kde.plasma.configuration
 
 ConfigModel {
     ConfigCategory {
-        name: i18n("General")
-        icon: "preferences-desktop"
-        source: "GeneralConfig.qml"
+         name: i18nc("@title", "General")
+         icon: "applications-development-relative"
+         source: "config/configGeneral.qml"
     }
 }
