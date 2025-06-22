@@ -1,9 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
-
 import org.kde.kirigami as Kirigami
-
 import org.kde.plasma.plasmoid
 import org.kde.plasma.extras as PlasmaExtras
 import org.kde.plasma.core as PlasmaCore
@@ -21,6 +19,53 @@ PlasmaExtras.Representation {
   Layout.minimumWidth: 200
   Layout.maximumWidth: 400
 
+  property bool onRefresh: false
+  property bool onError: false
+  property string errorMessage: ""
+  property string stdoutData: ""
+
+  // list of the devices
+  ListModel { id: devicesListModel }
+
+  function refresh() {
+    if (!onRefresh) updater.refresh()
+  }
+
+  // each line should be one bluetooth device
+  function injectList(data: string) {
+    data.split("\n").forEach(line => {
+      devicesListModel.append({ stdoutDataLine: line });
+    });
+  }
+
+  // map the cmd signal
+  Connections {
+    target: cmd
+
+    function onConnected(source) {
+      onError = false
+    }
+
+    function onIsUpdating(status) {
+      onRefresh = status
+    }
+
+    function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
+      if (stderr !== '') {
+        onError = true
+        errorMessage = stderr
+      }
+    }
+
+    function onNewStdoutData(data) {
+      if (data !== "") {
+        stdoutData = data
+        devicesListModel.clear()
+        injectList(data)
+      }
+    }
+  }
+
   // topbar
   RowLayout {
     id: header
@@ -35,31 +80,13 @@ PlasmaExtras.Representation {
 
       Controls.Label {
         height: Kirigami.Units.iconSizes.medium
-        text: 'Arch ' + full.totalArch + ' - Aur ' + full.totalAur
+        text: 'Bluetooth earbud'
       }
     }
 
     RowLayout {
       Layout.alignment: Qt.AlignRight
       spacing: 0
-
-      PlasmaComponents.BusyIndicator {
-        id: busyIndicatorUpdateIcon
-        visible: onRefresh && packageList !== ""
-      }
-
-      PlasmaComponents.ToolButton {
-        id: updateIcon
-        height: Kirigami.Units.iconSizes.medium
-        icon.name: "install-symbolic"
-        display: PlasmaComponents.AbstractButton.IconOnly
-        text: i18n("Install all updates")
-        onClicked: updateAll()
-        visible: !onRefresh && packageList !== ""
-        PlasmaComponents.ToolTip {
-          text: parent.text
-        }
-      }
 
       PlasmaComponents.BusyIndicator {
         id: busyIndicatorCheckUpdatesIcon
@@ -71,7 +98,7 @@ PlasmaExtras.Representation {
         height: Kirigami.Units.iconSizes.medium
         icon.name: "view-refresh-symbolic"
         display: PlasmaComponents.AbstractButton.IconOnly
-        text: i18n("Refresh list")
+        text: i18n("Refresh")
         visible: !onRefresh
         onClicked: refresh()
         PlasmaComponents.ToolTip {
@@ -107,17 +134,17 @@ PlasmaExtras.Representation {
     ListView {
       id: packageView
       anchors.rightMargin: Kirigami.Units.gridUnit
-      model: packageListModel
+      model: devicesListModel
       delegate: Components.ListItem {} // automatically inject the data from the model
     }
   }
 
-  // if not update is needed
+  // no data detected
   PlasmaExtras.PlaceholderMessage {
-    id: upToDateLabel
-    text: i18n("You're up-to-date !")
+    id: listEmptyMessage
+    text: i18n("No earbud detected!")
     anchors.centerIn: parent
-    visible: !onRefresh && packageList === "" && !onError
+    visible: !onRefresh && !onError && stdoutData === ""
   }
 
   // if an error happend

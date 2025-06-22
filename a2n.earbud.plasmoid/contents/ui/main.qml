@@ -16,8 +16,8 @@ PlasmoidItem {
     property bool isOnUpdate: false
 
     // load one instance of each needed service
-    Sv.Checker{ id: checker }
     Sv.Debug{ id: debug }
+    Sv.Updater{ id: updater }
 
     // the brain of the widget
     Plasma5Support.DataSource {
@@ -42,9 +42,7 @@ PlasmoidItem {
 
         onExited: function (cmd, exitCode, exitStatus, stdout, stderr) {
             debug.log(`${plasmoid.id}: ${JSON.stringify({cmd, exitCode, exitStatus, stdout, stderr})}`, "onExited")
-            // todo the result
-            // let total = stdout.replace(/\n/g, '')
-            // const isOnError = stderr !== ""
+            newStdoutData(stdout)
             isUpdating(false)
         }
 
@@ -54,10 +52,8 @@ PlasmoidItem {
             connectSource(cmd)
         }
 
+        signal newStdoutData(string data)
         signal isUpdating(bool status)
-        signal packagesList(string listAur, string listArch)
-        signal totalAur(string total)
-        signal totalArch(string total)
         signal connected(string source)
         signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
     }

@@ -33,7 +33,7 @@ Item {
         right: container.right
       }
       text: "x"
-      visible: true
+      visible: false
       icon: updateIcon
     }
 

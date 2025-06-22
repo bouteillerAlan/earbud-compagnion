@@ -9,7 +9,7 @@ import org.kde.kirigami as Kirigami
 
 Item {
     function log(message: string, scope: string) {
-        let date = Qt.formatTime(new Date(), "hh:mm:ss")
-        console.log(`A2N.EARBUD: ${date}: on ${scope}: ${message}`)
+        let hour = Qt.formatTime(new Date(), "hh:mm:ss")
+        console.log(`A2N.EARBUD: ${hour}: on ${scope}: ${message}`)
     }
 }

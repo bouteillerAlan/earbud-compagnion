@@ -3,14 +3,13 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
-import "../service" as Sv
+import "."
 
 Item {
-  Sv.Debug{ id: debug }
+  Debug{ id: debug }
 
   function refresh() {
-    debug.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    //cmd.exec("")
+    cmd.exec("bluetoothctl info")
   }
 
   function killProcess(process) {
