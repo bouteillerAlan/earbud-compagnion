@@ -8,6 +8,7 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.components as PlasmaComponents
 
 import "components" as Components
+import "../service" as Sv
 
 PlasmaExtras.Representation {
   id: full
@@ -25,6 +26,8 @@ PlasmaExtras.Representation {
   property string stdoutData: ""
 
   // list of the devices
+  Sv.Parser{ id: parser }
+  Sv.Debug{ id: debug }
   ListModel { id: devicesListModel }
 
   function refresh() {
@@ -33,9 +36,40 @@ PlasmaExtras.Representation {
 
   // each line should be one bluetooth device
   function injectList(data: string) {
-    data.split("\n").forEach(line => {
-      devicesListModel.append({ stdoutDataLine: line });
-    });
+    if (data === "") return;
+    const parsed = parser.parseBluetoothDevices(data)
+
+    // parsed is an array of
+    // {
+    //     "name": "string",
+    //     "data": {
+    //         "address": "string",
+    //         "uuids": [
+    //             {
+    //                 "description": "string",
+    //                 "uuid": "string"
+    //             }
+    //         ],
+    //         "supportedUUIDs": ["string"],
+    //         "name": "string",
+    //         "alias": "string",
+    //         "class": "string",
+    //         "icon": "string",
+    //         "paired": "bool",
+    //         "bonded": "bool",
+    //         "trusted": "bool",
+    //         "blocked": "bool",
+    //         "connected": "bool",
+    //         "legacyPairing": "bool",
+    //         "cablepairing": "string",
+    //         "modalias": "string",
+    //         "batteryPercentage": "int"
+    //     }
+    // }
+
+    parsed.forEach((value) => {
+      devicesListModel.append({ stdoutDataLine: value });
+    })
   }
 
   // map the cmd signal

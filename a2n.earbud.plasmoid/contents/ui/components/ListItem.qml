@@ -8,8 +8,33 @@ import org.kde.plasma.components as PlasmaComponents
 PlasmaComponents.ItemDelegate {
   id: listItem
 
-  // stdoutDataLine has sent via Full.qml/injectList()
-  property string stdoutData: stdoutDataLine
+  // stdoutDataLine is sent via Full.qml/injectList()
+  // stdoutDataLine: {
+  //     "name": "string",
+  //     "data": {
+  //         "address": "string",
+  //         "uuids": [
+  //             {
+  //                 "description": "string",
+  //                 "uuid": "string"
+  //             }
+  //         ],
+  //         "supportedUUIDs": ["string"],
+  //         "name": "string",
+  //         "alias": "string",
+  //         "class": "string",
+  //         "icon": "string",
+  //         "paired": "bool",
+  //         "bonded": "bool",
+  //         "trusted": "bool",
+  //         "blocked": "bool",
+  //         "connected": "bool",
+  //         "legacyPairing": "bool",
+  //         "cablepairing": "string",
+  //         "modalias": "string",
+  //         "batteryPercentage": "int"
+  //     }
+  // }
 
   width: parent.width // throw a warning but work anyway
 
@@ -21,14 +46,14 @@ PlasmaComponents.ItemDelegate {
         id: itemHeading
         level: 3
         width: parent.width
-        text: "something"
+        text: stdoutDataLine.name
       }
 
       Controls.Label {
         id: itemLabel
         width: parent.width
         wrapMode: Text.Wrap
-        text: stdoutData
+        text: stdoutDataLine.data.batteryPercentage
       }
     }
   }
