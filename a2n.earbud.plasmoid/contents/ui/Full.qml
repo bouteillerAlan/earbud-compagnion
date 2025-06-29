@@ -23,7 +23,7 @@ PlasmaExtras.Representation {
   property bool onRefresh: false
   property bool onError: false
   property string errorMessage: ""
-  property string stdoutData: ""
+  property var stdoutData: []
 
   // list of the devices
   Sv.Parser{ id: parser }
@@ -35,39 +35,9 @@ PlasmaExtras.Representation {
   }
 
   // each line should be one bluetooth device
-  function injectList(data: string) {
-    if (data === "") return;
-    const parsed = parser.parseBluetoothDevices(data)
-
-    // parsed is an array of
-    // {
-    //     "name": "string",
-    //     "data": {
-    //         "address": "string",
-    //         "uuids": [
-    //             {
-    //                 "description": "string",
-    //                 "uuid": "string"
-    //             }
-    //         ],
-    //         "supportedUUIDs": ["string"],
-    //         "name": "string",
-    //         "alias": "string",
-    //         "class": "string",
-    //         "icon": "string",
-    //         "paired": "bool",
-    //         "bonded": "bool",
-    //         "trusted": "bool",
-    //         "blocked": "bool",
-    //         "connected": "bool",
-    //         "legacyPairing": "bool",
-    //         "cablepairing": "string",
-    //         "modalias": "string",
-    //         "batteryPercentage": "int"
-    //     }
-    // }
-
-    parsed.forEach((value) => {
+  function injectList(data) {
+    if (data.length === 0) return;
+    data.forEach((value) => {
       devicesListModel.append({ stdoutDataLine: value });
     })
   }
@@ -92,7 +62,7 @@ PlasmaExtras.Representation {
     }
 
     function onNewStdoutData(data) {
-      if (data !== "") {
+      if (data.length > 0) {
         stdoutData = data
         devicesListModel.clear()
         injectList(data)
@@ -179,7 +149,7 @@ PlasmaExtras.Representation {
     id: listEmptyMessage
     text: i18n("No earbud detected!")
     anchors.centerIn: parent
-    visible: !onRefresh && !onError && stdoutData === ""
+    visible: !onRefresh && !onError && stdoutData.length === 0
   }
 
   // if an error happend

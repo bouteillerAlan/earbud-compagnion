@@ -7,67 +7,74 @@ import org.kde.plasma.extras as PlasmaExtras
 import org.kde.plasma.plasmoid
 
 ColumnLayout {
-    id: root
+  id: root
 
-    property var dividerColor: Kirigami.Theme.textColor
-    property var dividerOpacity: 0.1
-    property string totalArch: "0"
-    property string totalAur: "0"
+  property bool onRefresh: false
+  property bool onError: false
+  property string errorMessage: ""
+  property var stdoutData: []
 
-    function noUpdateAvailable() {
-        return totalArch === "0" && totalAur === "0"
+  Connections {
+    target: cmd
+
+    function onConnected(source) {
+      onError = false
     }
 
-    // map the cmd signal
-    Connections {
-        target: cmd
-
-        function onTotalAur(total) {
-            root.totalAur = total
-        }
-
-        function onTotalArch(total) {
-            root.totalArch = total
-        }
+    function onIsUpdating(status) {
+      onRefresh = status
     }
 
-    ColumnLayout {
-        id: mainLayout;
-        Layout.topMargin: Kirigami.Units.gridUnit / 2
-        Layout.leftMargin: Kirigami.Units.gridUnit / 2
-        Layout.bottomMargin: Kirigami.Units.gridUnit / 2
-        Layout.rightMargin: Kirigami.Units.gridUnit / 2
-        //Layout.preferredWidth: Kirigami.Units.gridUnit * 50
-
-        PlasmaExtras.Heading {
-            id: tooltipMaintext
-            level: 3
-            elide: Text.ElideRight
-            text: noUpdateAvailable() ? "No updates available" : "Updates are available"
-        }
-
-        RowLayout {
-            RowLayout {
-                PlasmaComponents3.Label {
-                    text: "Arch:"
-                    opacity: 1
-                }
-                PlasmaComponents3.Label {
-                    text: totalArch
-                    opacity: .7
-                }
-            }
-            Item { Layout.fillWidth: true }
-            RowLayout {
-                PlasmaComponents3.Label {
-                    text: "AUR:"
-                    opacity: 1
-                }
-                PlasmaComponents3.Label {
-                    text: totalAur
-                    opacity: .7
-                }
-            }
-        }
+    function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
+      if (stderr !== '') {
+        onError = true
+        errorMessage = stderr
+      }
     }
+
+    function onNewStdoutData(data) {
+      if (data.length > 0) {
+        stdoutData = data
+      }
+    }
+  }
+
+  ColumnLayout {
+      id: mainLayout;
+      Layout.topMargin: Kirigami.Units.gridUnit / 2
+      Layout.leftMargin: Kirigami.Units.gridUnit / 2
+      Layout.bottomMargin: Kirigami.Units.gridUnit / 2
+      Layout.rightMargin: Kirigami.Units.gridUnit / 2
+
+      PlasmaExtras.Heading {
+          id: tooltipMaintext
+          level: 3
+          elide: Text.ElideRight
+          text: stdoutData[0].name || "No device"
+      }
+
+      RowLayout {
+          RowLayout {
+              PlasmaComponents3.Label {
+                  text: "Bat:"
+                  opacity: 1
+              }
+              PlasmaComponents3.Label {
+                  text: stdoutData[0].data.batteryPercentage
+                  opacity: .7
+              }
+          }
+          Item { Layout.fillWidth: true }
+          // RowLayout {
+          //     PlasmaComponents3.Label {
+          //         text: "AUR:"
+          //         opacity: 1
+          //     }
+          //     PlasmaComponents3.Label {
+          //         text: totalAur
+          //         opacity: .7
+          //     }
+          // }
+      }
+  }
 }
