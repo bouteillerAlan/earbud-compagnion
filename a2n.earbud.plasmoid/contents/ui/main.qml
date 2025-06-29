@@ -63,7 +63,7 @@ PlasmoidItem {
   // execute function count each updateInterval minutes
   Timer {
       id: timer
-      interval: intervalConfig * 60000 // minute to milisecond
+      interval: 5000 // ms
       running: true
       repeat: true
       triggeredOnStart: true // trigger on start for a first check
