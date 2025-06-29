@@ -170,6 +170,7 @@ PlasmaExtras.Representation {
       anchors.rightMargin: Kirigami.Units.gridUnit
       model: devicesListModel
       delegate: Components.ListItem {} // automatically inject the data from the model
+      spacing: Kirigami.Units.smallSpacing // Add spacing between list items
     }
   }
 
