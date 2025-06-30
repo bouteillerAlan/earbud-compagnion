@@ -84,7 +84,7 @@ PlasmaExtras.Representation {
 
       Controls.Label {
         height: Kirigami.Units.iconSizes.medium
-        text: 'Bluetooth earbud'
+        text: 'Earbud companion'
       }
     }
 

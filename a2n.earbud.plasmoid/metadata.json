@@ -7,7 +7,7 @@
             }
         ],
         "Website": "https://github.com/bouteillerAlan/earbud",
-        "Name": "Earbud System Tray",
+        "Name": "Earbud Companion",
         "Id": "a2n.earbud.plasmoid",
         "Description": "Simple earbud icon for the system tray and taskbar",
         "Category": "Utilities",

@@ -44,7 +44,7 @@ PlasmoidItem {
       onExited: function (cmd, exitCode, exitStatus, stdout, stderr) {
         debug.log(`${plasmoid.id}: ${JSON.stringify({cmd, exitCode, exitStatus, stdout, stderr})}`, "onExited")
         var parsedST = parser.parseBluetoothDevices(stdout)
-        newStdoutData(parsedST)
+        if (parsedST.length > 0) newStdoutData(parsedST)
         isUpdating(false)
       }
 

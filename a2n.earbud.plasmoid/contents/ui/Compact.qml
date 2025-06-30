@@ -10,12 +10,21 @@ import "components" as Components
 Item {
   id: compact
 
+  property real itemSize: Math.min(compact.height, compact.width)
   property string iconUpdate: "earbud.svg"
+  property var stdoutData: []
+
+  Connections {
+    target: cmd
+
+    function onNewStdoutData(data) {
+      if (data.length > 0) stdoutData = data
+    }
+  }
 
   Item {
     id: container
-    //height: compact.itemSize
-    height: 36 // todo fix me
+    height: compact.itemSize
     width: height
 
     anchors.centerIn: parent
@@ -27,14 +36,16 @@ Item {
       source: iconUpdate
     }
 
-    WorkspaceComponents.BadgeOverlay {
+    Rectangle {
+      visible: stdoutData.length > 0 && stdoutData[0].data.connected
+      height: container.height / 2.5
+      width: height
+      radius: height / 2
+      color: "#4CAF50"
       anchors {
-        bottom: container.bottom
         right: container.right
+        bottom: container.bottom
       }
-      text: "x"
-      visible: false
-      icon: updateIcon
     }
 
     MouseArea {

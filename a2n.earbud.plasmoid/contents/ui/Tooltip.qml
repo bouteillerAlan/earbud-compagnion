@@ -65,16 +65,16 @@ ColumnLayout {
               }
           }
           Item { Layout.fillWidth: true }
-          // RowLayout {
-          //     PlasmaComponents3.Label {
-          //         text: "AUR:"
-          //         opacity: 1
-          //     }
-          //     PlasmaComponents3.Label {
-          //         text: totalAur
-          //         opacity: .7
-          //     }
-          // }
+          RowLayout {
+              PlasmaComponents3.Label {
+                  text: "IC:"
+                  opacity: 1
+              }
+              PlasmaComponents3.Label {
+                  text: stdoutData.length
+                  opacity: .7
+              }
+          }
       }
   }
 }
