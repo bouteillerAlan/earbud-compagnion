@@ -40,41 +40,49 @@ ColumnLayout {
   }
 
   ColumnLayout {
-      id: mainLayout;
-      Layout.topMargin: Kirigami.Units.gridUnit / 2
-      Layout.leftMargin: Kirigami.Units.gridUnit / 2
-      Layout.bottomMargin: Kirigami.Units.gridUnit / 2
-      Layout.rightMargin: Kirigami.Units.gridUnit / 2
+    id: mainLayout;
+    Layout.topMargin: Kirigami.Units.gridUnit / 2
+    Layout.leftMargin: Kirigami.Units.gridUnit / 2
+    Layout.bottomMargin: Kirigami.Units.gridUnit / 2
+    Layout.rightMargin: Kirigami.Units.gridUnit / 2
 
-      PlasmaExtras.Heading {
-          id: tooltipMaintext
-          level: 3
-          elide: Text.ElideRight
-          text: stdoutData[0].name || "No device"
-      }
+    PlasmaExtras.Heading {
+      id: tooltipMaintext
+      level: 3
+      elide: Text.ElideRight
+      text: stdoutData[0].name || "No device"
+    }
 
+    RowLayout {
       RowLayout {
-          RowLayout {
-              PlasmaComponents3.Label {
-                  text: "Bat:"
-                  opacity: 1
-              }
-              PlasmaComponents3.Label {
-                  text: stdoutData[0].data.batteryPercentage
-                  opacity: .7
-              }
-          }
-          Item { Layout.fillWidth: true }
-          RowLayout {
-              PlasmaComponents3.Label {
-                  text: "IC:"
-                  opacity: 1
-              }
-              PlasmaComponents3.Label {
-                  text: stdoutData.length
-                  opacity: .7
-              }
-          }
+        PlasmaComponents3.Label {
+          text: "Bat:"
+          opacity: 1
+        }
+        PlasmaComponents3.Label {
+          text: stdoutData[0].data.batteryPercentage || "Not connected"
+          opacity: .7
+        }
       }
+      Item { Layout.fillWidth: true }
+      // RowLayout {
+      //   PlasmaComponents3.Label {
+      //     text: "DS:"
+      //     opacity: 1
+      //   }
+      //   PlasmaComponents3.Label {
+      //     text: stdoutData[0].data.paired ? "●" : ""
+      //     opacity: .7
+      //   }
+      //   PlasmaComponents3.Label {
+      //     text: stdoutData[0].data.bonded ? "●" : ""
+      //     opacity: .7
+      //   }
+      //   PlasmaComponents3.Label {
+      //     text: stdoutData[0].data.trusted ? "●" : ""
+      //     opacity: .7
+      //   }
+      // }
+    }
   }
 }
