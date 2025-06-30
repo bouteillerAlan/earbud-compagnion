@@ -1,78 +1,38 @@
-[//]: # (note for me - Linux/Unix Desktops > Desktop Extensions > KDE Plasma Extensions > Plasma Wallpaper Plugins)
 
 <p align="center">
-  <a href="https://www.pling.com/p/2017888/">
-    <img alt="ActiveBlur" src="assets/store-img.png" width="220"/>
+  <a href="https://www.pling.com/p/2299736/">
+    <img alt="Earbud Compagnion" src="assets/Screenshot_20250630_104921.png" width="220"/>
   </a>
 </p>
-<h1 align="center">Active Blur <i>- a plasma wallpaper plugin</i></h1>
+<h1 align="center">Earbud compagnion <i>- a plasma widget</i></h1>
 
 <img alt="Static Badge" src="https://img.shields.io/badge/Still_maintened-Yes_%3A)-green">
 
-https://user-images.githubusercontent.com/30547569/233472177-a752d175-291a-4ba3-877d-dcd25a79b6e4.mp4
-
 ## Description
 
-Blur the wallpaper if a windows is active.
+Very simple plugin that show if a earplug is connected and show relevant information via the popup.
 
 ### main feature
 
-- live thumbnail preview
-- keep all the behavior of the default `image` plugin made by kde like :
-    - auto apply the wallpaper on click
-    - add color and blur option in function of the positioning
-- give you the ability to deactivate the effect
-- give you the ability to change the blur radius and the animation delay
-- `new` the slideshow wallpaper type is available too
-
-### history
-
-My own code for replacing [inactiveblur](https://github.com/Zren/plasma-wallpapers/tree/master/inactiveblur) that it seems to be abandoned.
-
-I have duplicated the default KDE `image` plugin so all the default effect and behavior is still present.
+- Custom color for the icon and the dot
+- Optional dot
+- Can be "show if relevant" via the systemtray (the intended usage)
+- Custom command and update interval are possible too
 
 ## Installation
 
 ### Plasma 6
-- Download via [the KDE store](https://www.pling.com/p/2134907/)
-- Install it via the wallpaper plugin ("get new plugin" button into Desktop Folder Settings)
-- Download the last release and extract it and place the folder into `~/.local/share/plasma/wallpapers/` next you need to rename it into `a2n.blur`
-- Download via :
-  - [the AUR (for arch linux users)](https://aur.archlinux.org/packages/plasma6-wallpapers-blurredwallpaper), thanks to [dr460nf1r3](https://github.com/dr460nf1r3)
-  - [the AUR (git release)(for arch linux users)](https://aur.archlinux.org/packages/plasma6-wallpapers-blurredwallpaper-git)
-
-### Plasma 5
-- Download via [the KDE store](https://www.pling.com/p/2017888/)
-- Download the V2.2.0 release and extract it and place the folder into `~/.local/share/plasma/wallpapers/` next you need to rename it into `a2n.blur`
-
-### How to help with the AUR package?
-
-Go here: [https://github.com/bouteillerAlan/plasma6-wallpapers-blurredwallpaper-git](https://github.com/bouteillerAlan/plasma6-wallpapers-blurredwallpaper-git).
-
-## Configuration
-
-| Name        | Description                                                      | Result                                                       |
-|-------------|------------------------------------------------------------------|--------------------------------------------------------------|
-| Active Blur | If you want the effect or not                                    | The effect is active or not                                  |
-| Slideshow   | If you want your wallpaper to be in slideshow             | Your wallpaper is a slideshow or a single image         |
-| Blur Radius | Give you the possibility to customize the blur radius            | The blur is stronger or weaker                               |
-| showDesktop | Give you the possibility to customize the delay of the animation | The blur appears and disappears more quickly or less quickly |
-
-![pres](assets/main-screenshot.png)
+- Download via [the KDE store](https://www.pling.com/p/2299736/)
+- Install it via the "Get new plasma widgets"
+- Download the last release and extract it and place the folder into `~/.local/share/plasma/plasmoids/`
 
 ## Code of conduct, license, authors, changelog, contributing
 
 See the following file :
 - [code of conduct](CODE_OF_CONDUCT.md)
 - [license](LICENSE)
-- [authors](AUTHORS)
 - [contributing](CONTRIBUTING.md)
-- [changelog](CHANGELOG)
 - [security](SECURITY.md)
-
-## Roadmap
-
-- bug : see issue #25 for the desync when user switch between img and slideshow
 
 ## Want to participate? Have a bug or a request feature?
 
@@ -80,10 +40,10 @@ Do not hesitate to open a pr or an issue. I reply when I can.
 
 ## Want to support my work?
 
-- [Give me a tips](https://ko-fi.com/a2n00)
-- [Give a star on github](https://github.com/bouteillerAlan/blurredwallpaper)
-- [Add a rating and a comment on Pling](https://www.pling.com/p/2134907/)
-- [Become a fan on Pling](https://www.pling.com/p/2134907/)
+- [Give a star on github](https://github.com/bouteillerAlan/earbud-compagnion)
+- [Give me a tips](https://github.com/sponsors/bouteillerAlan)
+- [Add a rating and a comment on Pling](https://www.pling.com/p/#/)
+- [Become a fan on Pling](https://www.pling.com/p/#/)
 - Or just participate to the developement :D
 
 ### Thanks !

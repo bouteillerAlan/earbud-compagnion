@@ -11,7 +11,7 @@ Item {
   id: compact
 
   property real itemSize: Math.min(compact.height, compact.width)
-  property string iconUpdate: "earbud.svg"
+  property string iconUpdate: "earbud_icon.svg"
   property var stdoutData: []
 
   Connections {
