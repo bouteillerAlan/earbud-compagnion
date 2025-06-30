@@ -40,7 +40,7 @@ Do not hesitate to open a pr or an issue. I reply when I can.
 
 ## Want to support my work?
 
-- [Give a star on github](https://github.com/bouteillerAlan/earbud-compagnion)
+- [Give a star on github](https://github.com/bouteillerAlan/earbud-companion)
 - [Give me a tips](https://github.com/sponsors/bouteillerAlan)
 - [Add a rating and a comment on Pling](https://www.pling.com/p/#/)
 - [Become a fan on Pling](https://www.pling.com/p/#/)
