@@ -7,43 +7,46 @@ import org.kde.kquickcontrols as KQuickControls
 Kirigami.ScrollablePage {
   id: commandConfigPage
 
-  property alias cfg_updateInterval: updateIntervalSpin.value
-  property alias cfg_debugMode: debugModeBox.checked
-  property alias cfg_retryMode: retryModeBox.checked
-  property alias cfg_notCloseCommand: notCloseBox.checked
+  property alias cfg_iconUseCustomColor: iconUseCustomColor.checked
+  property alias cfg_iconColor: iconColor.color
+
+  property alias cfg_mainDot: mainDot.checked
+  property alias cfg_mainDotUseCustomColor: mainDotUseCustomColor.checked
+  property alias cfg_mainDotColor: mainDotColor.color
 
   property alias cfg_updateCommand: updateCommandInput.text
-  property alias cfg_updateCommandOne: updateCommandOneInput.text
-  property alias cfg_countArchCommand: countArchCommandInput.text
-  property alias cfg_countAurCommand: countAurCommandInput.text
-
-  property alias cfg_listArchCommand: listArchCommandInput.text
-  property alias cfg_listAurCommand: listAurCommandInput.text
-
-  property alias cfg_termCmd: termCmdInput.text
-  property alias cfg_termNoCloseCmd: termNoCloseCmdInput.text
-
-  function generateCmdExample() {
-    const cmdA = "<font color=\"" + Kirigami.Theme.disabledTextColor + "\">" + cfg_termCmd + "</font> '<font color=\"" + Kirigami.Theme.positiveTextColor + "\">" + cfg_updateCommand + "</font>'<br/>"
-    const cmdB = "<font color=\"" + Kirigami.Theme.disabledTextColor + "\">" + cfg_termCmd + "</font> '<font color=\"" + Kirigami.Theme.positiveTextColor + "\">" + cfg_updateCommandOne + "</font> packageName'<br/>"
-    const cmdC = "<font color=\"" + Kirigami.Theme.disabledTextColor + "\">" + cfg_termNoCloseCmd + "</font> '<font color=\"" + Kirigami.Theme.positiveTextColor + "\">" + cfg_updateCommand + "</font>'<br/>"
-    const cmdD = "<font color=\"" + Kirigami.Theme.disabledTextColor + "\">" + cfg_termNoCloseCmd + "</font> '<font color=\"" + Kirigami.Theme.positiveTextColor + "\">" + cfg_updateCommandOne + "</font> packageName'<br/>"
-
-    return "Give the following cmd: <br/>" + cmdA + cmdB + cmdC + cmdD
-  }
+  property alias cfg_updateInterval: updateIntervalSpin.value
 
   ColumnLayout {
-
     anchors {
       left: parent.left
       top: parent.top
       right: parent.right
     }
 
-    Kirigami.InlineMessage {
-      Layout.fillWidth: true
-      text: "This option enable log for each cmd exec by the plugin. (regex: ARCHUPDATE)"
-      visible: debugModeBox.checked
+    Kirigami.FormLayout {
+      wideMode: false
+
+      Kirigami.Separator {
+        Kirigami.FormData.isSection: true
+        Kirigami.FormData.label: "Icon"
+      }
+    }
+
+    Kirigami.FormLayout {
+      RowLayout {
+        Kirigami.FormData.label: "Custom icon color: "
+        visible: true
+        Controls.CheckBox {
+          id: iconUseCustomColor
+          checked: cfg_iconUseCustomColor
+        }
+
+        KQuickControls.ColorButton {
+          id: iconColor
+          enabled: iconUseCustomColor.checked
+        }
+      }
     }
 
     Kirigami.FormLayout {
@@ -51,120 +54,64 @@ Kirigami.ScrollablePage {
 
       Kirigami.Separator {
         Kirigami.FormData.isSection: true
-        Kirigami.FormData.label: "General"
-      }
-    }
-
-    Kirigami.FormLayout {
-
-      Controls.SpinBox {
-        id: updateIntervalSpin
-        Kirigami.FormData.label: "Update every: "
-        from: 1
-        to: 1440 // 1 day
-        editable: true
-        textFromValue: (value) => value + " minute(s)"
-        valueFromText: (text) => parseInt(text)
-      }
-
-      Controls.CheckBox {
-        id: notCloseBox
-        Kirigami.FormData.label: "Do not close the terminal at the end of the upgrade action: "
-        checked: false
-      }
-
-      Controls.CheckBox {
-        id: debugModeBox
-        Kirigami.FormData.label: "Debug: "
-        checked: false
-      }
-
-      Controls.CheckBox {
-        id: retryModeBox
-        Kirigami.FormData.label: "Retry \"Search & count\" cmd if they are in error: "
-        checked: false
-      }
-
-    }
-
-   Kirigami.FormLayout {
-      wideMode: false
-
-      Kirigami.Separator {
-        Kirigami.FormData.isSection: true
-        Kirigami.FormData.label: "Search & count"
+        Kirigami.FormData.label: "Display"
       }
     }
 
     Kirigami.InlineMessage {
       Layout.fillWidth: true
-      text: "Replace yay by paru or with the AUR helper of your choice.\n checkupdates is recommanded for the db sync."
+      text: "The dot is shown when a device is connected."
       visible: true
     }
 
     Kirigami.FormLayout {
-      wideMode: false
-
-      Controls.TextField {
-        id: countArchCommandInput
-        Kirigami.FormData.label: "Count ARCH command: "
+      Controls.CheckBox {
+        id: mainDot
+        Kirigami.FormData.label: "Show dot: "
+        checked: cfg_mainDot
       }
 
-      Controls.TextField {
-        id: countAurCommandInput
-        Kirigami.FormData.label: "Count AUR command: "
-      }
+      RowLayout {
+        Kirigami.FormData.label: "Custom dot color: "
+        visible: mainDot.checked
+        Controls.CheckBox {
+          id: mainDotUseCustomColor
+          checked: cfg_mainDotUseCustomColor
+        }
 
-      Controls.TextField {
-        id: listArchCommandInput
-        Kirigami.FormData.label: "List ARCH command: "
-      }
-
-      Controls.TextField {
-        id: listAurCommandInput
-        Kirigami.FormData.label: "List AUR command: "
+        KQuickControls.ColorButton {
+          id: mainDotColor
+          enabled: mainDotUseCustomColor.checked
+        }
       }
     }
 
-      Kirigami.FormLayout {
-        wideMode: false
+    Kirigami.FormLayout {
+      wideMode: false
 
-        Kirigami.Separator {
-          Kirigami.FormData.isSection: true
-          Kirigami.FormData.label: "Update package"
-        }
+      Kirigami.Separator {
+        Kirigami.FormData.isSection: true
+        Kirigami.FormData.label: "Command"
+      }
+    }
+
+    Kirigami.FormLayout {
+      Controls.TextField {
+        id: updateCommandInput
+        Kirigami.FormData.label: "Default command: "
+        text: cfg_updateCommand
       }
 
-      Kirigami.FormLayout {
-        wideMode: false
-
-        Kirigami.Heading {
-          level: 3
-          width: parent.width
-          text: generateCmdExample()
-        }
-
-        Controls.TextField {
-          id: updateCommandInput
-          Kirigami.FormData.label: "Update command: "
-        }
-
-        Controls.TextField {
-          id: updateCommandOneInput
-          Kirigami.FormData.label: "Update one command: "
-        }
-
-        Controls.TextField {
-          id: termCmdInput
-          Kirigami.FormData.label: "Terminal cmd for update action: "
-        }
-
-        Controls.TextField {
-          id: termNoCloseCmdInput
-          Kirigami.FormData.label: "Terminal cmd for update action with do no close: "
-        }
+      Controls.SpinBox {
+        id: updateIntervalSpin
+        Kirigami.FormData.label: "Update interval (ms): "
+        from: 1000
+        to: 60000
+        stepSize: 1000
+        editable: true
+        textFromValue: (value) => value + " ms"
+        valueFromText: (text) => parseInt(text)
       }
-
+    }
   }
-
 }

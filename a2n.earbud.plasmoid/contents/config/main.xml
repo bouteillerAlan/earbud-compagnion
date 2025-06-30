@@ -11,130 +11,26 @@ http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
     </entry>
 </group>
 
-<group name="debugConfigPage">
-    <entry name="debugLog" type="String">
-        <default>Nothing</default>
-    </entry>
-</group>
-
-<group name="mouseConfigPage">
-    <entry name="invertMouseAction" type="Bool">
-        <default>false</default>
-    </entry>
-    <entry name="mainIsRefresh" type="Bool">
-        <default>false</default>
-    </entry>
-</group>
-
 <group name="commandConfigPage">
     <entry name="updateInterval" type="Int">
-    <default>30</default>
-    </entry>
-
-    <entry name="debugMode" type="Bool">
-    <default>false</default>
-    </entry>
-
-    <entry name="retryMode" type="Bool">
-        <default>false</default>
-    </entry>
-
-    <entry name="konsoleIsValid" type="Bool">
-    <default>false</default>
-    </entry>
-
-    <entry name="checkupdateIsValid" type="Bool">
-    <default>false</default>
-    </entry>
-
-    <entry name="notCloseCommand" type="Bool">
-    <default>false</default>
+        <default>5000</default>
     </entry>
 
     <entry name="updateCommand" type="String">
-        <default>yay</default>
+        <default>bluetoothctl devices | grep "^Device" | awk '{print $2}' | xargs -I {} sh -c 'echo "#=== Device {} ===#" &amp;&amp; bluetoothctl info {}'</default>
     </entry>
-
-    <entry name="updateCommandOne" type="String">
-        <default>yay -Sy</default>
-    </entry>
-
-    <entry name="countArchCommand" type="String">
-        <default>checkupdates | wc -l</default>
-    </entry>
-
-    <entry name="countAurCommand" type="String">
-        <default>yay -Qua | wc -l</default>
-    </entry>
-
-    <entry name="listArchCommand" type="String">
-        <default>checkupdates</default>
-    </entry>
-
-    <entry name="listAurCommand" type="String">
-        <default>yay -Qua</default>
-    </entry>
-
-    <entry name="termCmd" type="String">
-        <default>konsole -e</default>
-    </entry>
-
-    <entry name="termNoCloseCmd" type="String">
-        <default>konsole --noclose -e</default>
-    </entry>
-
 </group>
 
 <group name="displayConfigPage">
-    <entry name="separateResult" type="Bool">
-        <default>false</default>
-    </entry>
-
-    <entry name="separator" type="String">
-        <default>~</default>
-    </entry>
-
     <entry name="mainDot" type="Bool">
         <default>false</default>
-    </entry>
-
-    <entry name="mainDotPosition" type="Enum">
-        <choices>
-            <choice name="Top Right" />
-            <choice name="Top Left" />
-            <choice name="Bottom Right" />
-            <choice name="Bottom Left" />
-        </choices>
-        <default>2</default>
-    </entry>
-
-    <entry name="secondDot" type="Bool">
-        <default>false</default>
-    </entry>
-
-    <entry name="secondDotPosition" type="Enum">
-        <choices>
-            <choice name="Top Right" />
-            <choice name="Top Left" />
-            <choice name="Bottom Right" />
-            <choice name="Bottom Left" />
-        </choices>
-        <default>3</default>
     </entry>
 
     <entry name="mainDotColor" type="String">
         <default>white</default>
     </entry>
 
-    <entry name="secondDotColor" type="String">
-        <default>white</default>
-    </entry>
-
     <entry name="mainDotUseCustomColor" type="Bool">
-        <default>false</default>
-    </entry>
-
-    <entry name="secondDotUseCustomColor" type="Bool">
         <default>false</default>
     </entry>
 
@@ -145,48 +41,6 @@ http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
     <entry name="iconUseCustomColor" type="Bool">
         <default>false</default>
     </entry>
-</group>
-
-<group name="popupConfigPage">
-
-    <entry name="nameUseCustomColor" type="Bool">
-        <default>false</default>
-    </entry>
-    <entry name="nameColor" type="String">
-        <default>white</default>
-    </entry>
-
-    <entry name="sourceUseCustomColor" type="Bool">
-        <default>false</default>
-    </entry>
-    <entry name="sourceColor" type="String">
-        <default>white</default>
-    </entry>
-
-    <entry name="separatorUseCustomColor" type="Bool">
-        <default>false</default>
-    </entry>
-    <entry name="separatorColor" type="String">
-        <default>white</default>
-    </entry>
-    <entry name="separatorText" type="String">
-        <default>></default>
-    </entry>
-
-    <entry name="fvUseCustomColor" type="Bool">
-        <default>false</default>
-    </entry>
-    <entry name="fvColor" type="String">
-        <default>white</default>
-    </entry>
-
-    <entry name="tvUseCustomColor" type="Bool">
-        <default>false</default>
-    </entry>
-    <entry name="tvColor" type="String">
-        <default>white</default>
-    </entry>
-
 </group>
 
 </kcfg>

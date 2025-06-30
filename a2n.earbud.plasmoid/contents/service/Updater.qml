@@ -15,7 +15,8 @@ Item {
    * @return {void} Does not return any value.
    */
   function refresh() {
-    cmd.exec("bluetoothctl devices | grep \"^Device\" | awk '{print $2}' | xargs -I {} sh -c 'echo \"#=== Device {} ===#\" && bluetoothctl info {}'")
+    const command = plasmoid.configuration.updateCommand || "bluetoothctl devices | grep \"^Device\" | awk '{print $2}' | xargs -I {} sh -c 'echo \"#=== Device {} ===#\" && bluetoothctl info {}'"
+    cmd.exec(command)
   }
 
   function killProcess(process) {

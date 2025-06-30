@@ -14,6 +14,7 @@ PlasmoidItem {
 
   property int intervalConfig: plasmoid.configuration.updateInterval
   property bool isOnUpdate: false
+  property var stdoutData: []
 
   // load one instance of each needed service
   Sv.Debug{ id: debug }
@@ -44,7 +45,10 @@ PlasmoidItem {
       onExited: function (cmd, exitCode, exitStatus, stdout, stderr) {
         debug.log(`${plasmoid.id}: ${JSON.stringify({cmd, exitCode, exitStatus, stdout, stderr})}`, "onExited")
         var parsedST = parser.parseBluetoothDevices(stdout)
-        if (parsedST.length > 0) newStdoutData(parsedST)
+        if (parsedST.length > 0) {
+          stdoutData = parsedST
+          newStdoutData(parsedST)
+        }
         isUpdating(false)
       }
 
@@ -60,10 +64,10 @@ PlasmoidItem {
       signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
   }
 
-  // execute function count each updateInterval minutes
+  // execute function count each updateInterval ms
   Timer {
       id: timer
-      interval: 5000 // ms
+      interval: intervalConfig // use the configured interval
       running: true
       repeat: true
       triggeredOnStart: true // trigger on start for a first check
@@ -72,8 +76,7 @@ PlasmoidItem {
 
   // handle the "show when relevant" property for the systray
   function hasUpdate() {
-      // todo true when we have a least one connection
-      return true
+    return stdoutData.length > 0 && stdoutData[0].data.connected
   }
   Plasmoid.status: hasUpdate() ? PlasmaCore.Types.ActiveStatus : PlasmaCore.Types.PassiveStatus
 

@@ -37,11 +37,11 @@ Item {
     }
 
     Rectangle {
-      visible: stdoutData.length > 0 && stdoutData[0].data.connected
+      visible: plasmoid.configuration.mainDot && stdoutData.length > 0 && stdoutData[0].data.connected
       height: container.height / 2.5
       width: height
       radius: height / 2
-      color: "#4CAF50"
+      color: plasmoid.configuration.mainDotUseCustomColor ? plasmoid.configuration.mainDotColor : "#4CAF50"
       anchors {
         right: container.right
         bottom: container.bottom
