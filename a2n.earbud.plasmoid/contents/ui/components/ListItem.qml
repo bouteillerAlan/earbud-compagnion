@@ -145,8 +145,8 @@ PlasmaComponents.ItemDelegate {
       Controls.Label {
         text: batteryLevel > 0 ? batteryLevel + "%" : ""
         font.pointSize: Kirigami.Theme.defaultFont.pointSize * 0.9
-        horizontalAlignment: Text.AlignHCenter
-        Layout.alignment: Qt.AlignHCenter
+        horizontalAlignment: Text.AlignLeft
+        Layout.alignment: Qt.AlignLeft
         visible: batteryLevel > 0
       }
 
@@ -155,7 +155,7 @@ PlasmaComponents.ItemDelegate {
         id: batteryContainer
         Layout.preferredWidth: Kirigami.Units.gridUnit * 3
         Layout.preferredHeight: Kirigami.Units.gridUnit * 0.7
-        Layout.alignment: Qt.AlignHCenter
+        Layout.alignment: Qt.AlignLeft
         Layout.topMargin: 2 // Add a small top margin
         Layout.bottomMargin: 2 // Add a small bottom margin
         color: "transparent"

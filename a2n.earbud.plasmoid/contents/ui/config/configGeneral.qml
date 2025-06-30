@@ -25,6 +25,7 @@ Kirigami.ScrollablePage {
     }
 
     Kirigami.FormLayout {
+      Layout.alignment: Qt.AlignLeft
       wideMode: false
 
       Kirigami.Separator {
@@ -34,6 +35,7 @@ Kirigami.ScrollablePage {
     }
 
     Kirigami.FormLayout {
+      Layout.alignment: Qt.AlignLeft
       RowLayout {
         Kirigami.FormData.label: "Custom icon color: "
         visible: true
@@ -50,6 +52,7 @@ Kirigami.ScrollablePage {
     }
 
     Kirigami.FormLayout {
+      Layout.alignment: Qt.AlignLeft
       wideMode: false
 
       Kirigami.Separator {
@@ -65,6 +68,7 @@ Kirigami.ScrollablePage {
     }
 
     Kirigami.FormLayout {
+      Layout.alignment: Qt.AlignLeft
       Controls.CheckBox {
         id: mainDot
         Kirigami.FormData.label: "Show dot: "
@@ -87,6 +91,7 @@ Kirigami.ScrollablePage {
     }
 
     Kirigami.FormLayout {
+      Layout.alignment: Qt.AlignLeft
       wideMode: false
 
       Kirigami.Separator {
@@ -96,6 +101,7 @@ Kirigami.ScrollablePage {
     }
 
     Kirigami.FormLayout {
+      Layout.alignment: Qt.AlignLeft
       Controls.TextField {
         id: updateCommandInput
         Kirigami.FormData.label: "Default command: "
