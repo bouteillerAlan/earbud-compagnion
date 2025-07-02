@@ -14,11 +14,11 @@
         "Icon": "audio-headset",
         "EnabledByDefault": false,
         "License": "GPL-3.0+",
-        "Version": "1.0",
-        "Depends": ["bluetoothctl"]
+        "Version": "1.0"
     },
     "X-Plasma-NotificationArea": true,
     "X-Plasma-NotificationAreaCategory": "Hardware",
     "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-DBusActivationService": "org.bluez",
     "KPackageStructure": "Plasma/Applet"
 }

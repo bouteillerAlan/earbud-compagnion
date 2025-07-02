@@ -10,31 +10,18 @@ ColumnLayout {
   id: root
 
   property bool onRefresh: false
-  property bool onError: false
-  property string errorMessage: ""
-  property var stdoutData: []
+  property var audioDevices: []
 
   Connections {
-    target: cmd
-
-    function onConnected(source) {
-      onError = false
-    }
+    target: main
 
     function onIsUpdating(status) {
       onRefresh = status
     }
 
-    function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
-      if (stderr !== '') {
-        onError = true
-        errorMessage = stderr
-      }
-    }
-
-    function onNewStdoutData(data) {
+    function onNewDeviceData(data) {
       if (data.length > 0) {
-        stdoutData = data
+        audioDevices = data
       }
     }
   }
@@ -50,7 +37,7 @@ ColumnLayout {
       id: tooltipMaintext
       level: 3
       elide: Text.ElideRight
-      text: stdoutData[0].name || "No device"
+      text: audioDevices.length > 0 ? audioDevices[0].name : "No device"
     }
 
     RowLayout {
@@ -60,7 +47,7 @@ ColumnLayout {
           opacity: 1
         }
         PlasmaComponents3.Label {
-          text: stdoutData[0].data.batteryPercentage || "Not connected"
+          text: audioDevices.length > 0 ? (audioDevices[0].data.batteryPercentage || "Not connected") : "Not connected"
           opacity: .7
         }
       }
@@ -71,15 +58,15 @@ ColumnLayout {
       //     opacity: 1
       //   }
       //   PlasmaComponents3.Label {
-      //     text: stdoutData[0].data.paired ? "●" : ""
+      //     text: audioDevices.length > 0 && audioDevices[0].data.paired ? "●" : ""
       //     opacity: .7
       //   }
       //   PlasmaComponents3.Label {
-      //     text: stdoutData[0].data.bonded ? "●" : ""
+      //     text: audioDevices.length > 0 && audioDevices[0].data.bonded ? "●" : ""
       //     opacity: .7
       //   }
       //   PlasmaComponents3.Label {
-      //     text: stdoutData[0].data.trusted ? "●" : ""
+      //     text: audioDevices.length > 0 && audioDevices[0].data.trusted ? "●" : ""
       //     opacity: .7
       //   }
       // }

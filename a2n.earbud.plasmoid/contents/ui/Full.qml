@@ -22,16 +22,14 @@ PlasmaExtras.Representation {
 
   property bool onRefresh: false
   property bool onError: false
-  property string errorMessage: ""
-  property var stdoutData: []
+  property var audioDevices: []
 
   // list of the devices
-  Sv.Parser{ id: parser }
   Sv.Debug{ id: debug }
   ListModel { id: devicesListModel }
 
   function refresh() {
-    if (!onRefresh) updater.refresh()
+    if (!onRefresh) main.updateAudioDevices()
   }
 
   // each line should be one bluetooth device
@@ -42,28 +40,17 @@ PlasmaExtras.Representation {
     })
   }
 
-  // map the cmd signal
+  // map the main signals
   Connections {
-    target: cmd
-
-    function onConnected(source) {
-      onError = false
-    }
+    target: main
 
     function onIsUpdating(status) {
       onRefresh = status
     }
 
-    function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
-      if (stderr !== '') {
-        onError = true
-        errorMessage = stderr
-      }
-    }
-
-    function onNewStdoutData(data) {
+    function onNewDeviceData(data) {
       if (data.length > 0) {
-        stdoutData = data
+        audioDevices = data
         devicesListModel.clear()
         injectList(data)
       }
@@ -149,14 +136,14 @@ PlasmaExtras.Representation {
     id: listEmptyMessage
     text: i18n("No earbud detected!")
     anchors.centerIn: parent
-    visible: !onRefresh && !onError && stdoutData.length === 0
+    visible: !onRefresh && !onError && audioDevices.length === 0
   }
 
   // if an error happend
   Controls.Label {
     id: errorLabel
     width: parent.width
-    text: i18n("Hu ho something is wrong\n" + errorMessage)
+    text: i18n("Hu ho something is wrong")
     anchors.centerIn: parent
     visible: onError
     wrapMode: Text.Wrap

@@ -168,10 +168,6 @@ Item {
         // do nothing
       }
     }
-    console.log(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
-      devices
-    )
     return devices;
   }
 
