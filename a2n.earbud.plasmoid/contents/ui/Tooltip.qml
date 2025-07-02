@@ -5,6 +5,7 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.plasma.extras as PlasmaExtras
 import org.kde.plasma.plasmoid
+import org.kde.bluezqt as BluezQt
 
 ColumnLayout {
   id: root
@@ -26,6 +27,20 @@ ColumnLayout {
     }
   }
 
+  // Function to get Bluetooth status message
+  function getBluetoothStatusMessage() {
+    if (BluezQt.Manager.bluetoothBlocked) {
+      return i18n("Bluetooth is disabled");
+    }
+    if (!BluezQt.Manager.bluetoothOperational) {
+      if (BluezQt.Manager.adapters.length === 0) {
+        return i18n("No adapters available");
+      }
+      return i18n("Bluetooth is offline");
+    }
+    return "";
+  }
+
   ColumnLayout {
     id: mainLayout;
     Layout.topMargin: Kirigami.Units.gridUnit / 2
@@ -37,10 +52,17 @@ ColumnLayout {
       id: tooltipMaintext
       level: 3
       elide: Text.ElideRight
-      text: audioDevices.length > 0 ? audioDevices[0].name : "No device"
+      text: {
+        const statusMessage = getBluetoothStatusMessage();
+        if (statusMessage) {
+          return statusMessage;
+        }
+        return audioDevices.length > 0 ? audioDevices[0].name : "No device";
+      }
     }
 
     RowLayout {
+      visible: !getBluetoothStatusMessage() // Hide when there's a Bluetooth status message
       RowLayout {
         PlasmaComponents3.Label {
           text: "Bat:"

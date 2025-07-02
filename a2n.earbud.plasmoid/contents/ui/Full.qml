@@ -6,6 +6,7 @@ import org.kde.plasma.plasmoid
 import org.kde.plasma.extras as PlasmaExtras
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.components as PlasmaComponents
+import org.kde.bluezqt as BluezQt
 
 import "components" as Components
 import "../service" as Sv
@@ -23,6 +24,20 @@ PlasmaExtras.Representation {
   property bool onRefresh: false
   property bool onError: false
   property var audioDevices: []
+
+  // Function to get Bluetooth status message
+  function getBluetoothStatusMessage() {
+    if (BluezQt.Manager.bluetoothBlocked) {
+      return i18n("Bluetooth is disabled");
+    }
+    if (!BluezQt.Manager.bluetoothOperational) {
+      if (BluezQt.Manager.adapters.length === 0) {
+        return i18n("No adapters available");
+      }
+      return i18n("Bluetooth is offline");
+    }
+    return "";
+  }
 
   // list of the devices
   Sv.Debug{ id: debug }
@@ -113,7 +128,7 @@ PlasmaExtras.Representation {
   // page view for the list
   Kirigami.ScrollablePage {
     id: scrollView
-    visible: !onRefresh && !onError
+    visible: !onRefresh && !onError && getBluetoothStatusMessage() === ""
     background: Rectangle {
       anchors.fill: parent
       color: "transparent"
@@ -131,12 +146,20 @@ PlasmaExtras.Representation {
     }
   }
 
+  // Bluetooth status message
+  PlasmaExtras.PlaceholderMessage {
+    id: bluetoothStatusMessage
+    text: getBluetoothStatusMessage()
+    anchors.centerIn: parent
+    visible: !onRefresh && !onError && getBluetoothStatusMessage() !== ""
+  }
+
   // no data detected
   PlasmaExtras.PlaceholderMessage {
     id: listEmptyMessage
     text: i18n("No earbud detected!")
     anchors.centerIn: parent
-    visible: !onRefresh && !onError && audioDevices.length === 0
+    visible: !onRefresh && !onError && audioDevices.length === 0 && getBluetoothStatusMessage() === ""
   }
 
   // if an error happend
