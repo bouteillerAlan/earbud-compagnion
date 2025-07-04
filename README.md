@@ -17,7 +17,7 @@ Very simple plugin that show if a earplug is connected and show relevant informa
 - Custom color for the icon and the dot
 - Optional dot
 - Can be "show if relevant" via the systemtray (the intended usage)
-- Custom command and update interval are possible too
+- Use `org.kde.bluezqt` to fetch the data and update status
 
 ## Installation
 

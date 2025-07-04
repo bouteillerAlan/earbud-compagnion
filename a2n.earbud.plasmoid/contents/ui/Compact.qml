@@ -12,13 +12,13 @@ Item {
 
   property real itemSize: Math.min(compact.height, compact.width)
   property string iconUpdate: "earbud_icon.svg"
-  property var stdoutData: []
+  property var audioDevices: []
 
   Connections {
-    target: cmd
+    target: main
 
-    function onNewStdoutData(data) {
-      if (data.length > 0) stdoutData = data
+    function onNewDeviceData(data) {
+      if (data.length > 0) audioDevices = data
     }
   }
 
@@ -37,7 +37,7 @@ Item {
     }
 
     Rectangle {
-      visible: plasmoid.configuration.mainDot && stdoutData.length > 0 && stdoutData[0].data.connected
+      visible: plasmoid.configuration.mainDot && audioDevices.length > 0 && audioDevices[0].data.connected
       height: container.height / 2.5
       width: height
       radius: height / 2

@@ -4,106 +4,161 @@ import QtQuick.Controls
 import org.kde.plasma.core as PlasmaCore
 
 import org.kde.plasma.plasmoid
-import org.kde.plasma.plasma5support as Plasma5Support
+import org.kde.bluezqt as BluezQt
+import org.kde.plasma.private.bluetooth as PlasmaBt
 
 import "../_toolbox" as Tb
 import "../service" as Sv
 
 PlasmoidItem {
-  id: main
+    id: main
 
-  property int intervalConfig: plasmoid.configuration.updateInterval
-  property bool isOnUpdate: false
-  property var stdoutData: []
+    property var audioDevices: []
 
-  // load one instance of each needed service
-  Sv.Debug{ id: debug }
-  Sv.Updater{ id: updater }
-  Sv.Parser{ id: parser }
+    // load one instance of each needed service
+    Sv.Debug { id: debug }
 
-  // the brain of the widget
-  Plasma5Support.DataSource {
-      id: cmd
-      engine: "executable"
-      connectedSources: []
+    // Signal handlers to notify UI components
+    signal newDeviceData(var data)
+    signal isUpdating(bool status)
 
-      onNewData: function (sourceName, data) {
-        var exitCode = data["exit code"]
-        var exitStatus = data["exit status"]
-        var stdout = data["stdout"]
-        var stderr = data["stderr"]
-        exited(sourceName, exitCode, exitStatus, stdout, stderr)
-        disconnectSource(sourceName)
-      }
+    // Filter for audio devices
+    function isAudioDevice(device) {
+        if (!device) return false;
 
-      onSourceConnected: function (source) {
-        debug.log(`${plasmoid.id}: ${source}`, "onSourceConnected")
-        isUpdating(true)
-        connected(source)
-      }
-
-      onExited: function (cmd, exitCode, exitStatus, stdout, stderr) {
-        debug.log(`${plasmoid.id}: ${JSON.stringify({cmd, exitCode, exitStatus, stdout, stderr})}`, "onExited")
-        var parsedST = parser.parseBluetoothDevices(stdout)
-        if (parsedST.length > 0) {
-          stdoutData = parsedST
-          newStdoutData(parsedST)
+        // Check device type
+        if (device.type === BluezQt.Device.Headset ||
+            device.type === BluezQt.Device.Headphones ||
+            device.type === BluezQt.Device.OtherAudio) {
+            return true;
         }
-        isUpdating(false)
-      }
 
-      // execute the given cmd
-      function exec(cmd: string) {
-          if (!cmd) return
-          connectSource(cmd)
-      }
+        // Check UUIDs for audio services
+        const audioUUIDs = [
+            BluezQt.Services.AdvancedAudioDistribution,
+            BluezQt.Services.AudioSink,
+            BluezQt.Services.AudioSource,
+            BluezQt.Services.AVRemoteControl,
+            BluezQt.Services.AVRemoteControlTarget,
+            BluezQt.Services.HandsfreeAudioGateway,
+            BluezQt.Services.Headset,
+            BluezQt.Services.HeadsetAudioGateway
+        ];
 
-      signal newStdoutData(var data)
-      signal isUpdating(bool status)
-      signal connected(string source)
-      signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
-  }
+        for (let i = 0; i < audioUUIDs.length; i++) {
+            if (device.uuids.indexOf(audioUUIDs[i]) !== -1) {
+                return true;
+            }
+        }
 
-  // execute function count each updateInterval ms
-  Timer {
-      id: timer
-      interval: intervalConfig // use the configured interval
-      running: true
-      repeat: true
-      triggeredOnStart: true // trigger on start for a first check
-      onTriggered: updater.refresh()
-  }
+        // Check name for audio keywords
+        const name = device.name.toLowerCase();
+        const audioKeywords = ['headset', 'headphone', 'earbud', 'speaker', 'audio', 'soundbar', 'airpods', 'beats', 'jbl', 'sony', 'bose'];
 
-  // handle the "show when relevant" property for the systray
-  function hasUpdate() {
-    return stdoutData.length > 0 && stdoutData[0].data.connected
-  }
-  Plasmoid.status: hasUpdate() ? PlasmaCore.Types.ActiveStatus : PlasmaCore.Types.PassiveStatus
+        for (let i = 0; i < audioKeywords.length; i++) {
+            if (name.indexOf(audioKeywords[i]) !== -1) {
+                return true;
+            }
+        }
 
-  // map the UI
-  compactRepresentation: Compact {}
-  fullRepresentation: Full {}
+        return false;
+    }
 
-  // map the context menu
-  Plasmoid.contextualActions: [
-      PlasmaCore.Action {
-          text: i18n("Refresh")
-          icon.name: "view-refresh-symbolic"
-          onTriggered: {
-              updater.refresh()
-          }
-      }
-  ]
+    // Update the list of audio devices
+    function updateAudioDevices() {
+        isUpdating(true);
+        debug.log(`${plasmoid.id}: Updating audio devices`, "updateAudioDevices");
 
-  // load the tooltip
-  toolTipItem: Loader {
-      id: tooltipLoader
-      Layout.minimumWidth: item ? item.implicitWidth : 0
-      Layout.maximumWidth: item ? item.implicitWidth : 0
-      Layout.minimumHeight: item ? item.implicitHeight : 0
-      Layout.maximumHeight: item ? item.implicitHeight : 0
-      source: "Tooltip.qml"
-  }
+        const devices = BluezQt.Manager.devices;
+        const audioDevicesList = [];
 
-  Component.onCompleted: {}
+        for (let i = 0; i < devices.length; i++) {
+            const device = devices[i];
+            if (isAudioDevice(device)) {
+                audioDevicesList.push({
+                    name: device.name,
+                    data: {
+                        address: device.address,
+                        name: device.name,
+                        alias: device.name,
+                        icon: device.icon,
+                        paired: device.paired,
+                        trusted: device.trusted,
+                        connected: device.connected,
+                        batteryPercentage: device.battery ? device.battery.percentage : 0
+                    }
+                });
+            }
+        }
+
+        audioDevices = audioDevicesList;
+        newDeviceData(audioDevicesList);
+        isUpdating(false);
+
+        debug.log(`${plasmoid.id}: Found ${audioDevicesList.length} audio devices`, "updateAudioDevices");
+    }
+
+    // Connect to BluezQt signals to update when devices change
+    Connections {
+        target: BluezQt.Manager
+
+        function onDeviceAdded() {
+            updateAudioDevices();
+        }
+
+        function onDeviceRemoved() {
+            updateAudioDevices();
+        }
+
+        function onDeviceChanged() {
+            updateAudioDevices();
+        }
+
+        function onBluetoothBlockedChanged() {
+            updateAudioDevices();
+        }
+
+        function onBluetoothOperationalChanged() {
+            updateAudioDevices();
+        }
+    }
+
+    // handle the "show when relevant" property for the systray
+    function hasUpdate() {
+        return audioDevices.length > 0 && audioDevices[0].data.connected;
+    }
+
+    Plasmoid.status: hasUpdate() ? PlasmaCore.Types.ActiveStatus : PlasmaCore.Types.PassiveStatus
+
+    // map the UI
+    compactRepresentation: Compact {}
+    fullRepresentation: Full {}
+
+    // Create refresh action
+    PlasmaCore.Action {
+        id: refreshAction
+        text: i18n("Refresh")
+        icon.name: "view-refresh-symbolic"
+        onTriggered: function() {
+            updateAudioDevices();
+        }
+    }
+
+    // load the tooltip
+    toolTipItem: Loader {
+        id: tooltipLoader
+        Layout.minimumWidth: item ? item.implicitWidth : 0
+        Layout.maximumWidth: item ? item.implicitWidth : 0
+        Layout.minimumHeight: item ? item.implicitHeight : 0
+        Layout.maximumHeight: item ? item.implicitHeight : 0
+        source: "Tooltip.qml"
+    }
+
+    Component.onCompleted: {
+        // Add refresh action to context menu
+        Plasmoid.setAction("refresh", refreshAction);
+
+        // Initial update
+        updateAudioDevices();
+    }
 }
