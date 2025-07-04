@@ -14,9 +14,6 @@ Kirigami.ScrollablePage {
   property alias cfg_mainDotUseCustomColor: mainDotUseCustomColor.checked
   property alias cfg_mainDotColor: mainDotColor.color
 
-  property alias cfg_updateCommand: updateCommandInput.text
-  property alias cfg_updateInterval: updateIntervalSpin.value
-
   ColumnLayout {
     anchors {
       left: parent.left
@@ -87,36 +84,6 @@ Kirigami.ScrollablePage {
           id: mainDotColor
           enabled: mainDotUseCustomColor.checked
         }
-      }
-    }
-
-    Kirigami.FormLayout {
-      Layout.alignment: Qt.AlignLeft
-      wideMode: false
-
-      Kirigami.Separator {
-        Kirigami.FormData.isSection: true
-        Kirigami.FormData.label: "Command"
-      }
-    }
-
-    Kirigami.FormLayout {
-      Layout.alignment: Qt.AlignLeft
-      Controls.TextField {
-        id: updateCommandInput
-        Kirigami.FormData.label: "Default command: "
-        text: cfg_updateCommand
-      }
-
-      Controls.SpinBox {
-        id: updateIntervalSpin
-        Kirigami.FormData.label: "Update interval (ms): "
-        from: 1000
-        to: 60000
-        stepSize: 1000
-        editable: true
-        textFromValue: (value) => value + " ms"
-        valueFromText: (text) => parseInt(text)
       }
     }
   }
